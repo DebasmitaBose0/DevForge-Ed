@@ -686,6 +686,9 @@ function getLessonIndex(id) {
 /* ══════════════════════════════════════════════════════════
    GO TO LINE FEATURE (#81)
 ══════════════════════════════════════════════════════════ */
+// Base editor font size is 13px with 1.65 line-height, yielding a default line height of 21.45px.
+const DEFAULT_LINE_HEIGHT_PX = 21.45;
+
 function toggleGoToLine() {
   const popover = document.getElementById("goToLinePopover");
   if (!popover) return;
@@ -737,10 +740,11 @@ function executeGoToLine() {
   if (error) error.style.display = "none";
   hideGoToLine();
 
-  // Calculate position index
+  // Calculate position index. Handles both LF (\n) and CRLF (\r\n) line endings.
   let pos = 0;
+  const isCRLF = editor.value.includes("\r\n");
   for (let i = 0; i < lineNum - 1; i++) {
-    pos += lines[i].length + 1; // +1 for the newline character
+    pos += lines[i].length + (isCRLF ? 2 : 1);
   }
 
   editor.focus();
@@ -749,7 +753,7 @@ function executeGoToLine() {
 
   // Scroll to line
   const style = window.getComputedStyle(editor);
-  const lh = parseFloat(style.lineHeight) || 21.45;
+  const lh = parseFloat(style.lineHeight) || DEFAULT_LINE_HEIGHT_PX;
   editor.scrollTop = (lineNum - 1) * lh;
 }
 
@@ -2454,6 +2458,15 @@ document.addEventListener("keydown", e => {
 document.addEventListener("click", e => {
   if (fsPanelVisible && !e.target.closest("#fsPanel") && !e.target.closest("#fsSizeBtn")) {
     toggleFsPanel();
+  }
+  const popover = document.getElementById("goToLinePopover");
+  if (
+    popover &&
+    popover.style.display !== "none" &&
+    !e.target.closest("#goToLinePopover") &&
+    !e.target.closest("#goToLineBtn")
+  ) {
+    hideGoToLine();
   }
   // Shortcuts modal closes via its own overlay click (handled in openModal pattern)
   if (e.target === document.getElementById("shortcutsModal")) closeShortcutsModal();
