@@ -2204,7 +2204,8 @@ document.addEventListener("keydown", e => {
       e.preventDefault();
       if (filteredCommands.length > 0) {
         commandPaletteSelectedIdx = (commandPaletteSelectedIdx + 1) % filteredCommands.length;
-        CommandPalette.render();
+        CommandPalette.updateSelectionStyles();
+        CommandPalette.scrollSelectedIntoView();
       }
       return;
     }
@@ -2213,7 +2214,8 @@ document.addEventListener("keydown", e => {
       if (filteredCommands.length > 0) {
         commandPaletteSelectedIdx =
           (commandPaletteSelectedIdx - 1 + filteredCommands.length) % filteredCommands.length;
-        CommandPalette.render();
+        CommandPalette.updateSelectionStyles();
+        CommandPalette.scrollSelectedIntoView();
       }
       return;
     }
