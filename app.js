@@ -176,7 +176,8 @@ const Analytics = {
   _getTimes() {
     try {
       const val = window.localStorage.getItem("devforge_analytics_times");
-      return val ? JSON.parse(val) : {};
+      const parsed = val ? JSON.parse(val) : {};
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
     } catch {
       return {};
     }
@@ -192,7 +193,8 @@ const Analytics = {
   _getRetries() {
     try {
       const val = window.localStorage.getItem("devforge_analytics_retries");
-      return val ? JSON.parse(val) : {};
+      const parsed = val ? JSON.parse(val) : {};
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
     } catch {
       return {};
     }
@@ -208,7 +210,12 @@ const Analytics = {
   _getStreak() {
     try {
       const val = window.localStorage.getItem("devforge_analytics_streak");
-      return val ? JSON.parse(val) : [];
+      const parsed = val ? JSON.parse(val) : [];
+      return Array.isArray(parsed) ? parsed.filter(date => typeof date === "string") : [];
+    } catch {
+      return [];
+    }
+  },
     } catch {
       return [];
     }
