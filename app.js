@@ -269,11 +269,20 @@ const Analytics = {
   },
 
   getStats() {
+    const times = this._getTimes();
+    if (activeLessonId && sessionStartTime) {
+      const elapsedSec = Math.max(0, Math.round((Date.now() - sessionStartTime) / 1000));
+      if (elapsedSec > 0) {
+        times[activeLessonId] = (times[activeLessonId] || 0) + elapsedSec;
+      }
+    }
+
     return {
-      times: this._getTimes(),
+      times,
       retries: this._getRetries(),
       streak: this._getStreak(),
     };
+  }
   },
 
   resetAll() {
