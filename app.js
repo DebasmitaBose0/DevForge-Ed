@@ -740,11 +740,11 @@ function executeGoToLine() {
   if (error) error.style.display = "none";
   hideGoToLine();
 
-  // Calculate position index. Handles both LF (\n) and CRLF (\r\n) line endings.
+  // Calculate position index. Since split('\n') leaves '\r' in CRLF files,
+  // lines[i].length naturally accounts for '\r' if present.
   let pos = 0;
-  const isCRLF = editor.value.includes("\r\n");
   for (let i = 0; i < lineNum - 1; i++) {
-    pos += lines[i].length + (isCRLF ? 2 : 1);
+    pos += lines[i].length + 1;
   }
 
   editor.focus();
