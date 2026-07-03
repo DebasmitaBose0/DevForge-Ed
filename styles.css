@@ -1677,14 +1677,14 @@ header {
 }
 
 /* Learner Analytics Modal Layout (#79) */
-.analytics-modal-inner {
-  width: min(500px, 92vw) !important;
+.modal.analytics-modal-inner {
+  width: min(500px, 92vw);
   max-height: 85vh;
   display: flex;
   flex-direction: column;
   border-radius: 14px;
   overflow: hidden;
-  padding: 0 !important;
+  padding: 0;
   animation: shortcuts-slide-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
