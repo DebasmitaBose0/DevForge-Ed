@@ -161,6 +161,16 @@
         <button
           type="button"
           class="icon-btn"
+          id="goToLineBtn"
+          title="Go to line (Ctrl+G)"
+          aria-label="Open go to line input"
+          onclick="toggleGoToLine()"
+        >
+          📍
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
           id="analyticsBtn"
           title="Learner Analytics"
           aria-label="Open learner analytics modal"
@@ -293,6 +303,31 @@
               oninput="onEditorInput()"
               onscroll="syncScroll(this)"
             ></textarea>
+          </div>
+
+          <!-- Go to Line Popover (#81) -->
+          <div
+            class="go-to-line-popover"
+            id="goToLinePopover"
+            role="dialog"
+            aria-label="Go to line"
+            style="display: none"
+          >
+            <input
+              type="number"
+              id="goToLineInput"
+              placeholder="Go to line..."
+              min="1"
+              aria-label="Line number"
+            />
+            <span
+              class="go-to-line-error"
+              id="goToLineError"
+              aria-live="assertive"
+              style="display: none"
+            >
+              Line out of range
+            </span>
           </div>
         </div>
 
