@@ -446,7 +446,13 @@ const CommandPalette = {
 
   open() {
     if (fsPanelVisible) toggleFsPanel();
-    if (document.getElementById("shortcutsModal").classList.contains("show")) closeShortcutsModal();
+    if (activeModalEl) {
+      closeModal(activeModalEl);
+    }
+    const shortcutsBtn = document.getElementById("shortcutsBtn");
+    if (shortcutsBtn) shortcutsBtn.classList.remove("active");
+    const analyticsBtn = document.getElementById("analyticsBtn");
+    if (analyticsBtn) analyticsBtn.classList.remove("active");
 
     commandPalettePreviousFocus = document.activeElement;
     const modalEl = document.getElementById("commandPaletteModal");
@@ -490,6 +496,8 @@ const CommandPalette = {
       emptyLi.style.color = "var(--muted)";
       emptyLi.textContent = "No matching commands found";
       listEl.appendChild(emptyLi);
+      const input = document.getElementById("commandPaletteInput");
+      if (input) input.removeAttribute("aria-activedescendant");
       return;
     }
 
@@ -533,16 +541,29 @@ const CommandPalette = {
     });
 
     this.scrollSelectedIntoView();
+
+    // Update aria-activedescendant on render
+    if (filteredCommands.length > 0) {
+      const selectedItem = listEl.querySelector(".command-palette-item.selected");
+      const input = document.getElementById("commandPaletteInput");
+      if (selectedItem && input) {
+        input.setAttribute("aria-activedescendant", selectedItem.id);
+      }
+    }
   },
 
   updateSelectionStyles() {
     const listEl = document.getElementById("commandPaletteList");
     if (!listEl) return;
     const items = listEl.querySelectorAll(".command-palette-item");
+    const input = document.getElementById("commandPaletteInput");
     items.forEach((item, idx) => {
       const isSel = idx === commandPaletteSelectedIdx;
       item.classList.toggle("selected", isSel);
       item.setAttribute("aria-selected", isSel ? "true" : "false");
+      if (isSel && input) {
+        input.setAttribute("aria-activedescendant", item.id);
+      }
     });
   },
 
@@ -2243,10 +2264,14 @@ document.addEventListener("keydown", e => {
     }
   }
 
-  // Ctrl+K / Cmd+K -> Open command palette
+  // Ctrl+K / Cmd+K -> Open/Close command palette
   if (ctrl && key === "k") {
     e.preventDefault();
-    CommandPalette.open();
+    if (activeModalEl && activeModalEl.id === "commandPaletteModal") {
+      CommandPalette.close();
+    } else {
+      CommandPalette.open();
+    }
     return;
   }
 
