@@ -442,16 +442,25 @@ header {
   flex-direction: column;
   gap: 8px;
 }
-
-.sidebar-title {
-  font-size: 0.72rem;
-  font-family: var(--font-code);
+.sidebar-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+.sidebar-toggle-btn {
+  background: transparent;
+  border: none;
   color: var(--muted);
-  letter-spacing: 1.8px;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--surface2);
+  color: var(--text);
 }
 
 .sidebar-close-btn {
@@ -667,10 +676,10 @@ header {
 
 /* Sidebar toggle (mobile) */
 .sidebar-toggle {
-  display: none;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 /* Responsive: mobile < 768px */
 @media (max-width: 768px) {
   .sidebar-toggle {
@@ -692,9 +701,9 @@ header {
     transform: translateX(0);
     transition: transform 0.25s ease;
   }
-  .sidebar.collapsed {
-    transform: translateX(-100%);
-  }
+.sidebar.collapsed{
+    width:48px;
+}
   .sidebar.collapsed ~ .editor-panel {
     grid-column: 1 / span 3;
   }
@@ -729,6 +738,33 @@ header {
   .preview-size-btns {
     display: none;
   }
+}
+/* ==========================
+   Desktop Sidebar Collapse
+========================== */
+
+.workspace {
+  transition: grid-template-columns 0.25s ease;
+}
+
+.workspace.sidebar-collapsed {
+  grid-template-columns: 48px 1fr 4px 1fr;
+}
+
+.sidebar {
+  transition:
+    width 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.sidebar.collapsed {
+  width: 48px;
+}
+.sidebar.collapsed .search-wrap,
+.sidebar.collapsed .lesson-list,
+.sidebar.collapsed .sidebar-footer,
+.sidebar.collapsed .sidebar-title span {
+    display: none;
 }
 
 /* ══════════════════════════════════════════════

@@ -95,18 +95,6 @@
       </div>
 
       <div class="header-right">
-        <button
-          type="button"
-          class="sidebar-toggle icon-btn"
-          id="sidebarToggleBtn"
-          onclick="toggleSidebar()"
-          title="Toggle sidebar"
-          aria-label="Toggle sidebar"
-          aria-expanded="true"
-          aria-controls="appSidebar"
-        >
-          ☰
-        </button>
         <div
           class="autorun-wrap"
           onclick="toggleAutorun()"
@@ -187,12 +175,14 @@
             <span>Curriculum</span>
             <button
               type="button"
-              class="sidebar-close-btn"
-              id="sidebarCloseBtn"
+              class="sidebar-toggle-btn"
+              id="sidebarToggleBtn"
               onclick="toggleSidebar()"
-              aria-label="Close sidebar"
+              aria-label="Toggle sidebar"
+              aria-expanded="true"
+              aria-controls="appSidebar"
             >
-              &times;
+              ☰
             </button>
           </div>
           <div class="search-wrap">
