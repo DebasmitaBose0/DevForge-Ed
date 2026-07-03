@@ -216,10 +216,6 @@ const Analytics = {
       return [];
     }
   },
-    } catch {
-      return [];
-    }
-  },
   _saveStreak(streak) {
     try {
       window.localStorage.setItem("devforge_analytics_streak", JSON.stringify(streak));
@@ -282,7 +278,6 @@ const Analytics = {
       retries: this._getRetries(),
       streak: this._getStreak(),
     };
-  }
   },
 
   resetAll() {
