@@ -170,6 +170,16 @@
         >
           ?
         </button>
+        <button
+          type="button"
+          class="icon-btn"
+          id="analyticsBtn"
+          title="Learner Analytics"
+          aria-label="Open learner analytics modal"
+          onclick="openAnalyticsModal()"
+        >
+          📊
+        </button>
         <button type="button" class="run-btn" id="runBtn" onclick="runCode()" aria-label="Run code">
           ▶ Run
         </button>
@@ -514,6 +524,73 @@
     <!-- ══════════════════════════════════════
        FLOATING PANELS
   ══════════════════════════════════════ -->
+
+    <!-- Learner Analytics Modal (#79) -->
+    <div
+      class="modal-overlay"
+      id="analyticsModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="analyticsModalTitle"
+      tabindex="-1"
+    >
+      <div class="modal analytics-modal-inner">
+        <div class="shortcuts-modal-header">
+          <h2 id="analyticsModalTitle" class="shortcuts-modal-title">
+            <span class="shortcuts-modal-icon">📊</span>
+            Learner Analytics
+          </h2>
+          <button
+            type="button"
+            class="shortcuts-close-btn"
+            id="analyticsCloseBtn"
+            aria-label="Close learner analytics"
+            onclick="closeAnalyticsModal()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="shortcuts-modal-body analytics-modal-body">
+          <div class="analytics-section">
+            <h4 class="analytics-section-title">Consistency (Last 7 Days)</h4>
+            <div id="streakDotsRow" class="streak-dots-row">
+              <!-- 7 circles, green/grey -->
+            </div>
+            <p id="streakStatsText" class="streak-stats-text"></p>
+          </div>
+
+          <div class="analytics-section">
+            <h4 class="analytics-section-title">Lesson Stats</h4>
+            <div class="analytics-table-wrap">
+              <table class="analytics-table">
+                <thead>
+                  <tr>
+                    <th>Lesson</th>
+                    <th>Time</th>
+                    <th>Retries</th>
+                  </tr>
+                </thead>
+                <tbody id="analyticsTableBody">
+                  <!-- Table rows with lesson stats -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-modal-footer">
+          <button
+            type="button"
+            class="btn-cancel btn-reset-analytics"
+            onclick="resetAnalyticsConfirm()"
+          >
+            Reset Analytics
+          </button>
+          <button type="button" class="btn-cancel" onclick="closeAnalyticsModal()">Close</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Keyboard Shortcuts Modal (#76) -->
     <div
