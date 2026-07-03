@@ -582,7 +582,7 @@
       </div>
     </div>
 
-    <!-- Command Palette Modal (#80) -->
+    <!-- Command Palette Modal (`#80`) -->
     <div
       class="modal-overlay"
       id="commandPaletteModal"
@@ -592,6 +592,7 @@
       tabindex="-1"
     >
       <div class="modal command-palette-inner">
+        <h2 id="commandPaletteTitle" class="sr-only">Command Palette</h2>
         <div class="command-palette-search-wrap">
           <span class="command-palette-search-icon" aria-hidden="true">🔍</span>
           <input
@@ -602,6 +603,9 @@
             spellcheck="false"
             aria-autocomplete="list"
             aria-controls="commandPaletteList"
+            aria-label="Command palette search"
+            role="combobox"
+            aria-expanded="true"
           />
         </div>
         <!-- [html-validate-disable-next prefer-native-element -- command palette search list uses role="listbox" for key navigation ARIA pattern] -->
@@ -615,7 +619,6 @@
         </ul>
       </div>
     </div>
-
     <!-- Keyboard Shortcuts Modal (#76) -->
     <div
       class="modal-overlay"
