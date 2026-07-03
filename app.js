@@ -830,6 +830,80 @@ function getLessonIndex(id) {
 }
 
 /* ══════════════════════════════════════════════════════════
+   GO TO LINE FEATURE (#81)
+══════════════════════════════════════════════════════════ */
+// Base editor font size is 13px with 1.65 line-height, yielding a default line height of 21.45px.
+const DEFAULT_LINE_HEIGHT_PX = 21.45;
+
+function toggleGoToLine() {
+  const popover = document.getElementById("goToLinePopover");
+  if (!popover) return;
+  if (popover.style.display === "none") {
+    showGoToLine();
+  } else {
+    hideGoToLine();
+  }
+}
+
+function showGoToLine() {
+  const popover = document.getElementById("goToLinePopover");
+  const input = document.getElementById("goToLineInput");
+  const error = document.getElementById("goToLineError");
+  if (!popover || !input) return;
+
+  // Close other popovers or modals if open
+  if (activeModalEl) closeModal(activeModalEl);
+  if (fsPanelVisible) toggleFsPanel();
+
+  popover.style.display = "flex";
+  input.value = "";
+  if (error) error.style.display = "none";
+  input.focus();
+}
+
+function hideGoToLine() {
+  const popover = document.getElementById("goToLinePopover");
+  if (!popover) return;
+  popover.style.display = "none";
+  const editor = document.getElementById("codeEditor");
+  if (editor) editor.focus();
+}
+
+function executeGoToLine() {
+  const input = document.getElementById("goToLineInput");
+  const error = document.getElementById("goToLineError");
+  const editor = document.getElementById("codeEditor");
+  if (!input || !editor) return;
+
+  const lineNum = parseInt(input.value, 10);
+  const lines = editor.value.split("\n");
+
+  if (isNaN(lineNum) || lineNum < 1 || lineNum > lines.length) {
+    if (error) error.style.display = "block";
+    return;
+  }
+
+  if (error) error.style.display = "none";
+  hideGoToLine();
+
+  // Calculate position index. Since split('\n') leaves '\r' in CRLF files,
+  // lines[i].length naturally accounts for '\r' if present.
+  let pos = 0;
+  for (let i = 0; i < lineNum - 1; i++) {
+    pos += lines[i].length + 1;
+  }
+
+  editor.focus();
+  editor.selectionStart = pos;
+  editor.selectionEnd = pos;
+
+  // Scroll to line
+  const style = window.getComputedStyle(editor);
+  const lh = parseFloat(style.lineHeight) || DEFAULT_LINE_HEIGHT_PX;
+  editor.scrollTop = (lineNum - 1) * lh;
+}
+
+/* ══════════════════════════════════════════════════════════
    BOOTSTRAP
 ══════════════════════════════════════════════════════════ */
 function init() {
@@ -846,6 +920,18 @@ function init() {
   if (commandPaletteInput) {
     commandPaletteInput.addEventListener("input", e => {
       CommandPalette.search(e.target.value);
+    });
+  }
+  const goToLineInput = document.getElementById("goToLineInput");
+  if (goToLineInput) {
+    goToLineInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        executeGoToLine();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        hideGoToLine();
+      }
     });
   }
   if (window.innerWidth <= 768) {
@@ -1084,6 +1170,7 @@ function switchTab(tab) {
 }
 
 function loadTab(tab) {
+  lastLineCount = 0;
   const buf = buffers[currentLessonId];
   if (!buf) return;
 
@@ -1205,11 +1292,18 @@ function commitUndoState(key, val, options = {}) {
   }
 }
 
+let lastLineCount = 0;
+
 function updateLineNums() {
   const editor = document.getElementById("codeEditor");
+  if (!editor) return;
   const count = editor.value.split("\n").length;
+  if (count === lastLineCount) return;
+  lastLineCount = count;
   const nums = document.getElementById("lineNums");
-  nums.innerHTML = Array.from({ length: count }, (_, i) => `<span>${i + 1}</span>`).join("");
+  if (nums) {
+    nums.innerHTML = Array.from({ length: count }, (_, i) => `<span>${i + 1}</span>`).join("");
+  }
 }
 
 function syncScroll(el) {
@@ -2431,6 +2525,13 @@ document.addEventListener("keydown", e => {
     return;
   }
 
+  // Ctrl+G / Cmd+G -> Open/Close Go to Line Popover
+  if (ctrl && key === "g") {
+    e.preventDefault();
+    toggleGoToLine();
+    return;
+  }
+
   if (ctrl && e.key === "Enter") {
     e.preventDefault();
     runCode();
@@ -2487,6 +2588,11 @@ document.addEventListener("keydown", e => {
   }
 
   if (e.key === "Escape") {
+    const popover = document.getElementById("goToLinePopover");
+    if (popover && popover.style.display !== "none") {
+      hideGoToLine();
+      return;
+    }
     if (document.getElementById("shortcutsModal").classList.contains("show")) closeShortcutsModal();
     if (document.getElementById("analyticsModal").classList.contains("show")) closeAnalyticsModal();
     if (document.getElementById("commandPaletteModal").classList.contains("show")) {
@@ -2508,6 +2614,15 @@ document.addEventListener("keydown", e => {
 document.addEventListener("click", e => {
   if (fsPanelVisible && !e.target.closest("#fsPanel") && !e.target.closest("#fsSizeBtn")) {
     toggleFsPanel();
+  }
+  const popover = document.getElementById("goToLinePopover");
+  if (
+    popover &&
+    popover.style.display !== "none" &&
+    !e.target.closest("#goToLinePopover") &&
+    !e.target.closest("#goToLineBtn")
+  ) {
+    hideGoToLine();
   }
   // Shortcuts modal closes via its own overlay click (handled in openModal pattern)
   if (e.target === document.getElementById("shortcutsModal")) closeShortcutsModal();

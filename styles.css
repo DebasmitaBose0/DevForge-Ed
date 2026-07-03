@@ -833,7 +833,7 @@ header {
 
 .line-nums {
   padding: 14px 0;
-  background: var(--surface2);
+  background: var(--surface);
   border-right: 1px solid var(--border);
   font-family: var(--font-code);
   font-size: var(--fs);
@@ -848,6 +848,68 @@ header {
 .line-nums span {
   display: block;
   padding: 0 10px;
+}
+
+/* Go to Line Popover (#81) */
+.go-to-line-popover {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  z-index: 100;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 12px var(--shadow-strong);
+  animation: popover-fade-in 0.15s ease-out;
+}
+
+@keyframes popover-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#goToLineInput {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 6px 10px;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  width: 120px;
+  outline: none;
+}
+
+#goToLineInput::-webkit-outer-spin-button,
+#goToLineInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#goToLineInput[type="number"] {
+  -moz-appearance: textfield;
+}
+
+#goToLineInput:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px var(--cyan-shadow);
+  outline: none;
+}
+
+.go-to-line-error {
+  color: var(--red);
+  font-size: 0.72rem;
+  font-family: var(--font-ui);
 }
 
 .editor-inner {
