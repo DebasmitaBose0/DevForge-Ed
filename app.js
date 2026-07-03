@@ -429,6 +429,237 @@ function renderAnalyticsData() {
   }
 }
 
+/* ══════════════════════════════════════════════════════════
+   COMMAND PALETTE  (#80)
+══════════════════════════════════════════════════════════ */
+let commandPalettePreviousFocus = null;
+let commandPaletteSelectedIdx = 0;
+let filteredCommands = [];
+
+const CommandPalette = {
+  commands: [],
+
+  register(command) {
+    if (!command || !command.id || !command.label || typeof command.action !== "function") return;
+    this.commands.push(command);
+  },
+
+  open() {
+    if (fsPanelVisible) toggleFsPanel();
+    if (activeModalEl) {
+      closeModal(activeModalEl);
+    }
+    const shortcutsBtn = document.getElementById("shortcutsBtn");
+    if (shortcutsBtn) shortcutsBtn.classList.remove("active");
+    const analyticsBtn = document.getElementById("analyticsBtn");
+    if (analyticsBtn) analyticsBtn.classList.remove("active");
+
+    commandPalettePreviousFocus = document.activeElement;
+    const modalEl = document.getElementById("commandPaletteModal");
+    openModal(modalEl);
+
+    const input = document.getElementById("commandPaletteInput");
+    if (input) {
+      input.value = "";
+      input.focus();
+    }
+
+    this.search("");
+  },
+
+  close() {
+    const modalEl = document.getElementById("commandPaletteModal");
+    closeModal(modalEl);
+
+    if (commandPalettePreviousFocus && typeof commandPalettePreviousFocus.focus === "function") {
+      commandPalettePreviousFocus.focus();
+    }
+    commandPalettePreviousFocus = null;
+  },
+
+  search(query) {
+    const q = query.toLowerCase().trim();
+    filteredCommands = this.commands.filter(cmd => cmd.label.toLowerCase().includes(q));
+    commandPaletteSelectedIdx = 0;
+    this.render();
+  },
+
+  render() {
+    const listEl = document.getElementById("commandPaletteList");
+    if (!listEl) return;
+    listEl.innerHTML = "";
+
+    if (filteredCommands.length === 0) {
+      const emptyLi = document.createElement("li");
+      emptyLi.className = "command-palette-item";
+      emptyLi.style.justifyContent = "center";
+      emptyLi.style.color = "var(--muted)";
+      emptyLi.textContent = "No matching commands found";
+      listEl.appendChild(emptyLi);
+      const input = document.getElementById("commandPaletteInput");
+      if (input) input.removeAttribute("aria-activedescendant");
+      return;
+    }
+
+    filteredCommands.forEach((cmd, idx) => {
+      const li = document.createElement("li");
+      li.className =
+        "command-palette-item" + (idx === commandPaletteSelectedIdx ? " selected" : "");
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", idx === commandPaletteSelectedIdx ? "true" : "false");
+      li.id = `cmd-item-${cmd.id}`;
+
+      const labelSpan = document.createElement("span");
+      labelSpan.textContent = cmd.label;
+      li.appendChild(labelSpan);
+
+      if (cmd.shortcut) {
+        const shortcutDiv = document.createElement("div");
+        shortcutDiv.className = "command-palette-shortcut";
+
+        const parts = cmd.shortcut.split("+");
+        parts.forEach(part => {
+          const kbd = document.createElement("kbd");
+          kbd.className = "command-palette-kbd";
+          kbd.textContent = part;
+          shortcutDiv.appendChild(kbd);
+        });
+
+        li.appendChild(shortcutDiv);
+      }
+
+      li.addEventListener("click", () => {
+        this.executeCommand(cmd);
+      });
+
+      li.addEventListener("mouseenter", () => {
+        commandPaletteSelectedIdx = idx;
+        this.updateSelectionStyles();
+      });
+
+      listEl.appendChild(li);
+    });
+
+    this.scrollSelectedIntoView();
+
+    // Update aria-activedescendant on render
+    if (filteredCommands.length > 0) {
+      const selectedItem = listEl.querySelector(".command-palette-item.selected");
+      const input = document.getElementById("commandPaletteInput");
+      if (selectedItem && input) {
+        input.setAttribute("aria-activedescendant", selectedItem.id);
+      }
+    }
+  },
+
+  updateSelectionStyles() {
+    const listEl = document.getElementById("commandPaletteList");
+    if (!listEl) return;
+    const items = listEl.querySelectorAll(".command-palette-item");
+    const input = document.getElementById("commandPaletteInput");
+    items.forEach((item, idx) => {
+      const isSel = idx === commandPaletteSelectedIdx;
+      item.classList.toggle("selected", isSel);
+      item.setAttribute("aria-selected", isSel ? "true" : "false");
+      if (isSel && input) {
+        input.setAttribute("aria-activedescendant", item.id);
+      }
+    });
+  },
+
+  scrollSelectedIntoView() {
+    const listEl = document.getElementById("commandPaletteList");
+    if (!listEl) return;
+    const selectedItem = listEl.querySelector(".command-palette-item.selected");
+    if (selectedItem) {
+      selectedItem.scrollIntoView({ block: "nearest" });
+    }
+  },
+
+  executeCommand(cmd) {
+    this.close();
+    if (cmd && typeof cmd.action === "function") {
+      try {
+        cmd.action();
+      } catch (err) {
+        console.error("Failed to execute command:", cmd.id, err);
+      }
+    }
+  },
+};
+
+// Register pre-defined commands
+CommandPalette.register({
+  id: "run-code",
+  label: "Run Code",
+  shortcut: "Ctrl+Enter",
+  action: () => runCode(),
+});
+
+CommandPalette.register({
+  id: "reset-current-tab",
+  label: "Reset Current Tab",
+  action: () => {
+    applyEditorState("");
+    showToast("Current tab cleared ↺", "warn", "⟳");
+  },
+});
+
+CommandPalette.register({
+  id: "full-reset",
+  label: "Reset All Tabs (Starter Code)",
+  shortcut: "Ctrl+Shift+R",
+  action: () => showResetModal(),
+});
+
+CommandPalette.register({
+  id: "toggle-theme",
+  label: "Toggle Theme (Dark / Light)",
+  action: () => toggleTheme(),
+});
+
+CommandPalette.register({
+  id: "switch-to-html",
+  label: "Switch to HTML Tab",
+  shortcut: "Ctrl+1",
+  action: () => switchTab("html"),
+});
+
+CommandPalette.register({
+  id: "switch-to-css",
+  label: "Switch to CSS Tab",
+  shortcut: "Ctrl+2",
+  action: () => switchTab("css"),
+});
+
+CommandPalette.register({
+  id: "switch-to-js",
+  label: "Switch to JS Tab",
+  shortcut: "Ctrl+3",
+  action: () => switchTab("js"),
+});
+
+CommandPalette.register({
+  id: "next-lesson",
+  label: "Next Lesson",
+  shortcut: "Ctrl+]",
+  action: () => navLesson(1),
+});
+
+CommandPalette.register({
+  id: "prev-lesson",
+  label: "Previous Lesson",
+  shortcut: "Ctrl+[",
+  action: () => navLesson(-1),
+});
+
+CommandPalette.register({
+  id: "open-shortcuts",
+  label: "Open Keyboard Shortcuts Help",
+  shortcut: "?",
+  action: () => openShortcutsModal(),
+});
+
 // Accessible-name labels for the code editor, keyed by the active language tab.
 const EDITOR_ARIA_LABELS = {
   html: "HTML code editor",
@@ -464,6 +695,12 @@ function init() {
   document.getElementById("streakLabel").textContent = `🔥 ${streak} streak`;
   updateProgress();
   initResizer();
+  const commandPaletteInput = document.getElementById("commandPaletteInput");
+  if (commandPaletteInput) {
+    commandPaletteInput.addEventListener("input", e => {
+      CommandPalette.search(e.target.value);
+    });
+  }
   if (window.innerWidth <= 768) {
     sidebarOpen = false;
     document.querySelector(".sidebar").classList.add("collapsed");
@@ -1383,11 +1620,14 @@ function checkGoalRule(rule, buf) {
 
     case "css-property":
       // Checks if a CSS property name is used (before a colon)
-       return new RegExp(`${escapeRegExp(rule.value)}\\s*:`, "i").test(css);
+      return new RegExp(`${escapeRegExp(rule.value)}\\s*:`, "i").test(css);
 
     case "css-property-value":
       // Checks if property: value combo appears
-      return new RegExp(`${escapeRegExp(rule.property)}\\s*:\\s*[^;]*${escapeRegExp(rule.value)}`, "i").test(css);
+      return new RegExp(
+        `${escapeRegExp(rule.property)}\\s*:\\s*[^;]*${escapeRegExp(rule.value)}`,
+        "i"
+      ).test(css);
 
     case "css-contains":
       // Raw substring match in CSS
@@ -1657,13 +1897,16 @@ function importProgress(event) {
         throw new Error("Invalid Buffers");
       }
       for (const key of Object.keys(data.buffers)) {
-         const b = data.buffers[key];
-         if (
-           !b || typeof b !== "object" ||
-           typeof b.html !== "string" || typeof b.css !== "string" || typeof b.js !== "string"
-         ) {
-           throw new Error("Invalid buffer entry: " + key);
-         }
+        const b = data.buffers[key];
+        if (
+          !b ||
+          typeof b !== "object" ||
+          typeof b.html !== "string" ||
+          typeof b.css !== "string" ||
+          typeof b.js !== "string"
+        ) {
+          throw new Error("Invalid buffer entry: " + key);
+        }
       }
 
       pendingImportData = data;
@@ -1976,6 +2219,36 @@ document.addEventListener("keydown", e => {
   const ctrl = e.ctrlKey || e.metaKey;
   const key = e.key.toLowerCase();
 
+  // Command Palette keyboard navigation & execution
+  if (activeModalEl && activeModalEl.id === "commandPaletteModal") {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (filteredCommands.length > 0) {
+        commandPaletteSelectedIdx = (commandPaletteSelectedIdx + 1) % filteredCommands.length;
+        CommandPalette.updateSelectionStyles();
+        CommandPalette.scrollSelectedIntoView();
+      }
+      return;
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (filteredCommands.length > 0) {
+        commandPaletteSelectedIdx =
+          (commandPaletteSelectedIdx - 1 + filteredCommands.length) % filteredCommands.length;
+        CommandPalette.updateSelectionStyles();
+        CommandPalette.scrollSelectedIntoView();
+      }
+      return;
+    }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (filteredCommands.length > 0) {
+        CommandPalette.executeCommand(filteredCommands[commandPaletteSelectedIdx]);
+      }
+      return;
+    }
+  }
+
   if (activeModalEl && e.key === "Tab") {
     const focusable = getModalFocusable(activeModalEl);
     if (focusable.length > 0) {
@@ -1989,6 +2262,17 @@ document.addEventListener("keydown", e => {
         first.focus();
       }
     }
+  }
+
+  // Ctrl+K / Cmd+K -> Open/Close command palette
+  if (ctrl && key === "k") {
+    e.preventDefault();
+    if (activeModalEl && activeModalEl.id === "commandPaletteModal") {
+      CommandPalette.close();
+    } else {
+      CommandPalette.open();
+    }
+    return;
   }
 
   if (ctrl && e.key === "Enter") {
@@ -2049,6 +2333,9 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     if (document.getElementById("shortcutsModal").classList.contains("show")) closeShortcutsModal();
     if (document.getElementById("analyticsModal").classList.contains("show")) closeAnalyticsModal();
+    if (document.getElementById("commandPaletteModal").classList.contains("show")) {
+      CommandPalette.close();
+    }
     if (fsPanelVisible) toggleFsPanel();
     hideResetModal();
     hideImportModal();
@@ -2069,6 +2356,7 @@ document.addEventListener("click", e => {
   // Shortcuts modal closes via its own overlay click (handled in openModal pattern)
   if (e.target === document.getElementById("shortcutsModal")) closeShortcutsModal();
   if (e.target === document.getElementById("analyticsModal")) closeAnalyticsModal();
+  if (e.target === document.getElementById("commandPaletteModal")) CommandPalette.close();
   if (e.target === document.getElementById("resetModal")) hideResetModal();
   if (e.target === document.getElementById("importConfirmModal")) hideImportModal();
   if (e.target === document.getElementById("completionBanner")) hideCompletion();
@@ -2166,3 +2454,10 @@ window.exportProgress = exportProgress;
 window.triggerImport = triggerImport;
 window.importProgress = importProgress;
 window.confirmImportProgress = confirmImportProgress;
+
+// Progressive hints (#77)
+window.revealNextHint = revealNextHint;
+window.renderLessonHints = renderLessonHints;
+
+// Command Palette (#80)
+window.CommandPalette = CommandPalette;
