@@ -6,7 +6,7 @@
    cache when offline.
 ═══════════════════════════════════════════════════════════ */
 
-const CACHE = "devforge-v1";
+const CACHE = "devforge-v2";
 
 // Scope-relative paths so the same worker functions regardless of the base path
 // it is served from — GitHub Pages (/DevForge/), Netlify (/), a custom domain, or
@@ -17,6 +17,13 @@ const PRECACHE = [
   "./styles.css",
   "./app.js",
   "./curriculum.js",
+  "./storage.js",
+  "./analytics.js",
+  "./ui.js",
+  "./editor.js",
+  "./lesson.js",
+  "./preview.js",
+  "./commands.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
