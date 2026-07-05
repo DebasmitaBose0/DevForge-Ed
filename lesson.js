@@ -102,6 +102,7 @@ function checkSnapshotOnLoad() {
 
         // Switch to active tab and reload it
         loadTab(activeTab || "html");
+        runCode({ trackProgress: false });
 
         // Enter read-only mode
         enterReadOnlyMode();
