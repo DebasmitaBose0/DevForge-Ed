@@ -305,8 +305,8 @@ function highlightJS(code) {
       .replace(/(\/\/[^\n]*)/g, `<span class="tok-cmt">$1</span>`)
       // Multi-line comments
       .replace(/(\/\*[\s\S]*?\*\/)/g, `<span class="tok-cmt">$1</span>`)
-      // Template literals
-      .replace(/(`[^`]*`)/g, `<span class="tok-str">$1</span>`)
+      // Template literals (backticks were escaped to &#96; by escHtml)
+      .replace(/(&#96;[\s\S]*?&#96;)/g, `<span class="tok-str">$1</span>`)
       // Double-quoted strings
       .replace(/(&quot;[^&\n]*&quot;)/g, `<span class="tok-str">$1</span>`)
       // Single-quoted strings
