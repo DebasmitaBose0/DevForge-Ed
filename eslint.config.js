@@ -75,6 +75,7 @@ export default [
         activeLessonId: "writable",
         sessionStartTime: "writable",
         failedCheckLessons: "writable",
+        activeModalEl: "writable",
 
         // Shared objects and namespace APIs
         CommandPalette: "readonly",
