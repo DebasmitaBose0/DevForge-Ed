@@ -35,7 +35,7 @@ function editorUndo() {
 
 function editorRedo() {
   const key = currentLessonId + "_" + activeTab;
-  flushUndoState(key, { preserveRedo: true });
+  flushUndoState(key);
   const stack = redoStacks[key];
   if (!stack || stack.length === 0) return;
   const next = stack.pop();
