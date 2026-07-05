@@ -729,6 +729,11 @@ function checkSnapshotOnLoad() {
   if (hash.startsWith("#snapshot=")) {
     const encoded = hash.substring(10);
 
+    if (encoded.length > 50000) {
+      showToast("Snapshot link is too large to load", "error", "⚠️");
+      return;
+    }
+
     try {
       const json = LZString.decompressFromEncodedURIComponent(encoded);
       if (json) {
