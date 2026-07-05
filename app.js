@@ -695,22 +695,19 @@ function generateSnapshot() {
   const json = JSON.stringify(data);
   let compressed = "";
   try {
-    compressed = LZString.compressToBase64(json);
+    compressed = LZString.compressToEncodedURIComponent(json);
   } catch (err) {
     console.error("LZString compression failed:", err);
     showToast("Failed to compress snapshot", "error", "❌");
     return;
   }
 
-  // Base64url encode (replace +, / and = to be URL-safe)
-  const base64url = compressed.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-
-  if (base64url.length > 50000) {
+  if (compressed.length > 50000) {
     showToast("Snapshot too large to share via URL", "error", "⚠️");
     return;
   }
 
-  const shareUrl = `${window.location.origin}${window.location.pathname}#snapshot=${base64url}`;
+  const shareUrl = `${window.location.origin}${window.location.pathname}#snapshot=${compressed}`;
 
   if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
     navigator.clipboard
@@ -730,16 +727,10 @@ function generateSnapshot() {
 function checkSnapshotOnLoad() {
   const hash = window.location.hash;
   if (hash.startsWith("#snapshot=")) {
-    const base64url = hash.substring(10);
-    // Revert base64url to standard base64
-    let base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-    // Pad base64 if needed
-    while (base64.length % 4) {
-      base64 += "=";
-    }
+    const encoded = hash.substring(10);
 
     try {
-      const json = LZString.decompressFromBase64(base64);
+      const json = LZString.decompressFromEncodedURIComponent(encoded);
       if (json) {
         const data = JSON.parse(json);
         // Load this snapshot into the active lesson buffers
@@ -1317,10 +1308,7 @@ function syncScroll(el) {
 }
 
 function handleEditorKey(e) {
-  if (isReadOnlyMode) {
-    e.preventDefault();
-    return;
-  }
+  if (isReadOnlyMode) return;
   const el = e.target;
   const s = el.selectionStart;
   const end = el.selectionEnd;
