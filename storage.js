@@ -5,6 +5,7 @@
    Depends on: shared state declared in app.js (xp, streak,
    doneSet, buffers, revealedHints, autorun)
 ═══════════════════════════════════════════════════════════════ */
+/* exported saveProgress, scheduleSave, loadProgress, clearProgress */
 "use strict";
 
 const STORAGE_KEY = "devforge:progress:v1";

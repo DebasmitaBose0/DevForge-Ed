@@ -1,11 +1,15 @@
-/* ═══════════════════════════════════════════════════════════════
-   DevForge — preview.js
-   Preview iframe rendering, console panel (add/filter/clear),
-   and the postMessage bridge that forwards console.* calls from
-   the sandboxed iframe back to the parent UI.
-   Depends on: shared state in app.js, storage.js, lesson.js, ui.js,
-   analytics.js
-═══════════════════════════════════════════════════════════════ */
+/* exported
+  runCode,
+  extractBody,
+  buildPreviewDoc,
+  clearConsoleUI,
+  addConsoleLog,
+  copyConsoleText,
+  toggleConsole,
+  filterConsole,
+  applyConsoleFilter,
+  clearConsoleFilter
+*/
 "use strict";
 
 /* ══════════════════════════════════════════════════════════
@@ -16,6 +20,8 @@ function runCode(options = {}) {
   saveCurrentBuffer();
   const buf = buffers[currentLessonId];
   if (!buf) return;
+
+  const allGoalsMet = trackProgress ? checkAllGoalsMet(currentLessonId) : false;
 
   // Track retries before running the code (re-run after a failed check)
   if (trackProgress && failedCheckLessons.has(currentLessonId)) {
@@ -38,7 +44,7 @@ function runCode(options = {}) {
   document.getElementById("previewFrame").srcdoc = doc;
 
   // Award XP on first run of each lesson
-  if (trackProgress && lastRunLesson !== currentLessonId) {
+  if (trackProgress && allGoalsMet && lastRunLesson !== currentLessonId) {
     const lesson = getLesson(currentLessonId);
     if (!doneSet.has(currentLessonId)) {
       xp += lesson.xp;
@@ -51,7 +57,7 @@ function runCode(options = {}) {
   }
 
   // Mark lesson done
-  if (trackProgress) {
+  if (trackProgress && allGoalsMet) {
     const isNewlyDone = !doneSet.has(currentLessonId);
     doneSet.add(currentLessonId);
     const sideEl = document.getElementById("sidebar-" + currentLessonId);
@@ -66,7 +72,6 @@ function runCode(options = {}) {
 
   // Check if goals are met for failedCheckLessons update
   if (trackProgress) {
-    const allGoalsMet = checkAllGoalsMet(currentLessonId);
     if (!allGoalsMet) {
       failedCheckLessons.add(currentLessonId);
     } else {

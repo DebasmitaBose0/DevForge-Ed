@@ -5,6 +5,29 @@
    Depends on: shared state in app.js, storage.js, lesson.js (for
    validateGoals — resolved at call time)
 ═══════════════════════════════════════════════════════════════ */
+/* exported
+  editorUndo,
+  editorRedo,
+  applyEditorState,
+  onEditorInput,
+  pushUndoState,
+  flushUndoState,
+  seedUndoState,
+  commitUndoState,
+  updateLineNums,
+  syncScroll,
+  handleEditorKey,
+  highlight,
+  highlightHTML,
+  highlightCSS,
+  highlightJS,
+  escHtml,
+  escapeHtml,
+  toggleGoToLine,
+  showGoToLine,
+  hideGoToLine,
+  executeGoToLine
+*/
 "use strict";
 
 const undoStacks = {}; // { [lessonId_tab]: [string] }

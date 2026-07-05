@@ -5,9 +5,9 @@
    Depends on: shared state in app.js, ui.js (activeModalEl,
    fsPanelVisible), all action functions resolved at call time.
 ═══════════════════════════════════════════════════════════════ */
+/* exported CommandPalette, commandPaletteSelectedIdx, filteredCommands */
 "use strict";
 
-let commandPalettePreviousFocus = null;
 let commandPaletteSelectedIdx = 0;
 let filteredCommands = [];
 
@@ -29,7 +29,6 @@ const CommandPalette = {
     const analyticsBtn = document.getElementById("analyticsBtn");
     if (analyticsBtn) analyticsBtn.classList.remove("active");
 
-    commandPalettePreviousFocus = document.activeElement;
     const modalEl = document.getElementById("commandPaletteModal");
     openModal(modalEl);
 
@@ -45,11 +44,6 @@ const CommandPalette = {
   close() {
     const modalEl = document.getElementById("commandPaletteModal");
     closeModal(modalEl);
-
-    if (commandPalettePreviousFocus && typeof commandPalettePreviousFocus.focus === "function") {
-      commandPalettePreviousFocus.focus();
-    }
-    commandPalettePreviousFocus = null;
   },
 
   search(query) {

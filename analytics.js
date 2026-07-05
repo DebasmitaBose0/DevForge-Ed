@@ -4,6 +4,7 @@
    analytics modal rendering.
    Depends on: shared state in app.js, lesson helpers in lesson.js
 ═══════════════════════════════════════════════════════════════ */
+/* exported Analytics, openAnalyticsModal, closeAnalyticsModal, resetAnalyticsConfirm, renderAnalyticsData, failedCheckLessons */
 "use strict";
 
 let activeLessonId = null;

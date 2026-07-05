@@ -5,6 +5,44 @@
    progress bar, autorun, preview size, keyboard shortcuts modal.
    Depends on: shared state in app.js, storage.js, analytics.js
 ═══════════════════════════════════════════════════════════════ */
+/* exported
+  activeModalEl,
+  modalReturnFocus,
+  getModalFocusable,
+  openModal,
+  closeModal,
+  showResetModal,
+  hideResetModal,
+  showImportModal,
+  hideImportModal,
+  exportProgress,
+  triggerImport,
+  importProgress,
+  confirmImportProgress,
+  confirmReset,
+  copyAllCode,
+  changeFontSize,
+  toggleFsPanel,
+  openShortcutsModal,
+  closeShortcutsModal,
+  toggleShortcuts,
+  updateThemeButton,
+  applyTheme,
+  toggleTheme,
+  applySavedTheme,
+  showCompletion,
+  hideCompletion,
+  restartAll,
+  spawnConfetti,
+  showToast,
+  announce,
+  initResizer,
+  toggleSidebar,
+  toggleLessonPane,
+  updateProgress,
+  toggleAutorun,
+  setPreviewSize
+*/
 "use strict";
 
 let activeModalEl = null;
@@ -162,6 +200,7 @@ function confirmImportProgress() {
     document.getElementById("streakLabel").textContent = `🔥 ${streak} streak`;
     buildSidebar();
     loadLesson(currentLessonId, { trackProgress: false });
+    updateProgress();
 
     showToast("Progress restored successfully!", "success", "✅");
   } catch {

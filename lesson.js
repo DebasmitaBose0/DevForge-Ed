@@ -5,6 +5,32 @@
    Depends on: shared state in app.js, storage.js, editor.js,
    preview.js (runCode — resolved at call time)
 ═══════════════════════════════════════════════════════════════ */
+/* exported
+  getLesson,
+  getAllLessons,
+  getLessonIndex,
+  generateSnapshot,
+  checkSnapshotOnLoad,
+  enterReadOnlyMode,
+  forkSnapshot,
+  buildSidebar,
+  filterLessons,
+  clearSearch,
+  loadLesson,
+  saveCurrentBuffer,
+  renderLessonHints,
+  revealNextHint,
+  buildFileTabs,
+  switchTab,
+  loadTab,
+  updateNav,
+  navLesson,
+  escapeRegExp,
+  checkGoalRule,
+  checkAllGoalsMet,
+  validateGoals,
+  toggleGoalsPanel
+*/
 "use strict";
 
 const TAB_DOT_COLORS = { html: "#f0641e", css: "#58A6FF", js: "#D29922" };

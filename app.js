@@ -12,6 +12,29 @@
 ═══════════════════════════════════════════════════════════════ */
 
 /* global Blob, FileReader, LZString */
+/* exported
+  currentLessonId,
+  activeTab,
+  lessonPaneOpen,
+  consolePaneOpen,
+  goalsPanelOpen,
+  autorun,
+  autorunTimer,
+  fsPanelVisible,
+  sidebarOpen,
+  xp,
+  streak,
+  lastRunLesson,
+  errorCount,
+  revealedHints,
+  consoleScrolledUp,
+  consoleLineCount,
+  isReadOnlyMode,
+  doneSet,
+  buffers,
+  scrollPositions,
+  init
+*/
 "use strict";
 
 /* ══════════════════════════════════════════════════════════
@@ -366,25 +389,3 @@ window.generateSnapshot = generateSnapshot;
 window.checkSnapshotOnLoad = checkSnapshotOnLoad;
 window.enterReadOnlyMode = enterReadOnlyMode;
 window.forkSnapshot = forkSnapshot;
-
-// Expose shared state variables to window to avoid unused var warnings
-window.currentLessonId = currentLessonId;
-window.activeTab = activeTab;
-window.lessonPaneOpen = lessonPaneOpen;
-window.consolePaneOpen = consolePaneOpen;
-window.goalsPanelOpen = goalsPanelOpen;
-window.autorun = autorun;
-window.autorunTimer = autorunTimer;
-window.fsPanelVisible = fsPanelVisible;
-window.sidebarOpen = sidebarOpen;
-window.xp = xp;
-window.streak = streak;
-window.lastRunLesson = lastRunLesson;
-window.errorCount = errorCount;
-window.revealedHints = revealedHints;
-window.consoleScrolledUp = consoleScrolledUp;
-window.consoleLineCount = consoleLineCount;
-window.isReadOnlyMode = isReadOnlyMode;
-window.doneSet = doneSet;
-window.buffers = buffers;
-window.scrollPositions = scrollPositions;
