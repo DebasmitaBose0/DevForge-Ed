@@ -218,13 +218,14 @@ function clearSearch() {
    LESSON LOADING
 ══════════════════════════════════════════════════════════ */
 function loadLesson(id, { trackProgress = true } = {}) {
+  const lesson = getLesson(id);
+  if (!lesson) return;
+
   if (currentLessonId !== id) {
     Analytics.endSession();
   }
   saveCurrentBuffer();
   currentLessonId = id;
-  const lesson = getLesson(id);
-  if (!lesson) return;
 
   // Initialise buffer on first visit
   if (!buffers[id]) {
