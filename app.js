@@ -5,7 +5,7 @@
    Depends on: curriculum.js (CURRICULUM array must load first)
 ═══════════════════════════════════════════════════════════════ */
 
-/* global Blob, FileReader */
+/* global Blob, FileReader, LZString */
 "use strict";
 
 /* ══════════════════════════════════════════════════════════
@@ -29,6 +29,7 @@ let darkTheme = true;
 let consoleScrolledUp = false;
 const CONSOLE_MAX_LINES = 200;
 let consoleLineCount = 0;
+let isReadOnlyMode = false;
 
 const doneSet = new Set(); // lesson ids that have been run at least once
 const buffers = {}; // { [lessonId]: { html, css, js } }  — user edits
@@ -600,6 +601,10 @@ CommandPalette.register({
   id: "reset-current-tab",
   label: "Reset Current Tab",
   action: () => {
+    if (isReadOnlyMode) {
+      showToast("Cannot modify code in read-only mode. Fork first! ⚠️", "warn", "⚠️");
+      return;
+    }
     applyEditorState("");
     showToast("Current tab cleared ↺", "warn", "⟳");
   },
@@ -609,7 +614,13 @@ CommandPalette.register({
   id: "full-reset",
   label: "Reset All Tabs (Starter Code)",
   shortcut: "Ctrl+Shift+R",
-  action: () => showResetModal(),
+  action: () => {
+    if (isReadOnlyMode) {
+      showToast("Cannot modify code in read-only mode. Fork first! ⚠️", "warn", "⚠️");
+      return;
+    }
+    showResetModal();
+  },
 });
 
 CommandPalette.register({
@@ -666,6 +677,137 @@ const EDITOR_ARIA_LABELS = {
   css: "CSS code editor",
   js: "JS code editor",
 };
+
+/* ══════════════════════════════════════════════════════════
+   SHAREABLE SNAPSHOT LINK FEATURE (#82)
+══════════════════════════════════════════════════════════ */
+function generateSnapshot() {
+  const editor = document.getElementById("codeEditor");
+  if (editor && buffers[currentLessonId]) {
+    buffers[currentLessonId][activeTab] = editor.value;
+  }
+  const current = buffers[currentLessonId] || { html: "", css: "", js: "" };
+  const data = {
+    html: current.html || "",
+    css: current.css || "",
+    js: current.js || "",
+  };
+  const json = JSON.stringify(data);
+  let compressed = "";
+  try {
+    compressed = LZString.compressToEncodedURIComponent(json);
+  } catch (err) {
+    console.error("LZString compression failed:", err);
+    showToast("Failed to compress snapshot", "error", "❌");
+    return;
+  }
+
+  if (compressed.length > 50000) {
+    showToast("Snapshot too large to share via URL", "error", "⚠️");
+    return;
+  }
+
+  const shareUrl = `${window.location.origin}${window.location.pathname}#snapshot=${compressed}`;
+
+  if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        showToast("Link copied to clipboard! 🔗", "success", "📋");
+      })
+      .catch(err => {
+        console.error("Failed to copy link:", err);
+        showToast("Failed to copy link", "error", "❌");
+      });
+  } else {
+    showToast("Clipboard copy not supported", "error", "❌");
+  }
+}
+
+function checkSnapshotOnLoad() {
+  const hash = window.location.hash;
+  if (hash.startsWith("#snapshot=")) {
+    const encoded = hash.substring(10);
+
+    if (encoded.length > 50000) {
+      showToast("Snapshot link is too large to load", "error", "⚠️");
+      return;
+    }
+
+    try {
+      const json = LZString.decompressFromEncodedURIComponent(encoded);
+      if (json) {
+        const data = JSON.parse(json);
+        // Load this snapshot into the active lesson buffers
+        if (!buffers[currentLessonId]) {
+          buffers[currentLessonId] = { html: "", css: "", js: "" };
+        }
+        buffers[currentLessonId].html = data.html || "";
+        buffers[currentLessonId].css = data.css || "";
+        buffers[currentLessonId].js = data.js || "";
+
+        // Switch to active tab and reload it
+        loadTab(activeTab || "html");
+
+        // Enter read-only mode
+        enterReadOnlyMode();
+      }
+    } catch (err) {
+      console.error("Failed to decode snapshot:", err);
+      showToast("Failed to load snapshot link", "error", "❌");
+    }
+  }
+}
+
+function enterReadOnlyMode() {
+  isReadOnlyMode = true;
+  const editor = document.getElementById("codeEditor");
+  if (editor) {
+    editor.readOnly = true;
+    editor.classList.add("readonly-editor");
+  }
+
+  // Show read-only banner
+  let banner = document.getElementById("readOnlyBanner");
+  if (!banner) {
+    banner = document.createElement("div");
+    banner.id = "readOnlyBanner";
+    banner.className = "readonly-banner";
+    banner.innerHTML = `
+      <span>👁️ Read-only snapshot — Fork to edit</span>
+      <button type="button" class="fork-btn" id="forkBtn" onclick="forkSnapshot()">🍴 Fork / Edit</button>
+    `;
+    const panel = document.getElementById("editorPanel");
+    if (panel) {
+      panel.insertBefore(banner, panel.firstChild);
+    }
+  }
+  banner.style.display = "flex";
+}
+
+function forkSnapshot() {
+  isReadOnlyMode = false;
+  const editor = document.getElementById("codeEditor");
+  if (editor) {
+    editor.readOnly = false;
+    editor.classList.remove("readonly-editor");
+  }
+
+  // Hide read-only banner
+  const banner = document.getElementById("readOnlyBanner");
+  if (banner) {
+    banner.style.display = "none";
+  }
+
+  // Remove snapshot from URL hash
+  window.history.replaceState(
+    null,
+    document.title,
+    window.location.pathname + window.location.search
+  );
+
+  showToast("Snapshot forked! You can now edit code 🚀", "success", "🍴");
+}
 
 /* ══════════════════════════════════════════════════════════
    HELPERS — curriculum lookups
@@ -765,6 +907,7 @@ function init() {
   loadProgress();
   buildSidebar();
   loadLesson(currentLessonId, { trackProgress: false });
+  checkSnapshotOnLoad();
   document.getElementById("xpVal").textContent = xp;
   document.getElementById("streakLabel").textContent = `🔥 ${streak} streak`;
   updateProgress();
@@ -1090,6 +1233,7 @@ function applyEditorState(val) {
 ══════════════════════════════════════════════════════════ */
 
 function onEditorInput() {
+  if (isReadOnlyMode) return;
   if (!buffers[currentLessonId]) return;
   const editor = document.getElementById("codeEditor");
   const newVal = editor.value;
@@ -1169,6 +1313,7 @@ function syncScroll(el) {
 }
 
 function handleEditorKey(e) {
+  if (isReadOnlyMode) return;
   const el = e.target;
   const s = el.selectionStart;
   const end = el.selectionEnd;
@@ -1923,6 +2068,10 @@ function closeModal(modalEl) {
 }
 
 function showResetModal() {
+  if (isReadOnlyMode) {
+    showToast("Cannot modify code in read-only mode. Fork first! ⚠️", "warn", "⚠️");
+    return;
+  }
   openModal(document.getElementById("resetModal"));
   announce("Reset confirmation dialog opened");
 }
@@ -2577,8 +2726,8 @@ window.renderLessonHints = renderLessonHints;
 // Command Palette (#80)
 window.CommandPalette = CommandPalette;
 
-// Go to Line (#81)
-window.toggleGoToLine = toggleGoToLine;
-window.showGoToLine = showGoToLine;
-window.hideGoToLine = hideGoToLine;
-window.executeGoToLine = executeGoToLine;
+// Shareable Snapshot Link (#82)
+window.generateSnapshot = generateSnapshot;
+window.checkSnapshotOnLoad = checkSnapshotOnLoad;
+window.enterReadOnlyMode = enterReadOnlyMode;
+window.forkSnapshot = forkSnapshot;

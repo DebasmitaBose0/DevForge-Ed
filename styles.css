@@ -2447,3 +2447,46 @@ header {
   font-size: 0.72rem;
   color: var(--pink);
 }
+
+/* Read-only snapshot banner (#82) */
+.readonly-banner {
+  display: none; /* controlled by JS */
+  align-items: center;
+  justify-content: space-between;
+  background: var(--amber-dim);
+  border-bottom: 1px solid var(--amber);
+  color: var(--amber);
+  padding: 10px 16px;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.readonly-banner span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.readonly-banner .fork-btn {
+  background: var(--amber);
+  color: var(--button-text);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.readonly-banner .fork-btn:hover {
+  opacity: 0.9;
+}
+
+.readonly-editor {
+  opacity: 0.85;
+  cursor: not-allowed !important;
+}

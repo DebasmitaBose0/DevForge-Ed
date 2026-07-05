@@ -17,8 +17,15 @@
     <meta name="apple-mobile-web-app-title" content="DevForge" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'self' https:; frame-src 'self' https:;"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'self' https:; frame-src 'self' https:;"
     />
+    <!-- LZString for compression/decompression of snapshots (#82) -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"
+      integrity="sha512-qtX0GLM3qX8rxJN1gyDfcnMFFrKvixfoEOwbBib9VafR5vbChV5LeE5wSI/x+IlCkTY5ZFddFDCCfaVJJNnuKQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </head>
   <body>
     <!-- ══════════════════════════════════════
@@ -161,12 +168,12 @@
         <button
           type="button"
           class="icon-btn"
-          id="goToLineBtn"
-          title="Go to line (Ctrl+G)"
-          aria-label="Open go to line input"
-          onclick="toggleGoToLine()"
+          id="shareBtn"
+          title="Share snapshot"
+          aria-label="Generate shareable snapshot link"
+          onclick="generateSnapshot()"
         >
-          📍
+          🔗
         </button>
         <button
           type="button"
