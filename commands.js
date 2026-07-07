@@ -24,8 +24,8 @@ const CommandPalette = {
     if (activeModalEl) {
       closeModal(activeModalEl);
     }
-    const shortcutsBtn = document.getElementById("shortcutsBtn");
-    if (shortcutsBtn) shortcutsBtn.classList.remove("active");
+    const helpBtn = document.getElementById("helpBtn");
+    if (helpBtn) helpBtn.classList.remove("active");
     const analyticsBtn = document.getElementById("analyticsBtn");
     if (analyticsBtn) analyticsBtn.classList.remove("active");
 
