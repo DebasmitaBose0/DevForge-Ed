@@ -415,7 +415,6 @@ function switchTab(tab) {
 }
 
 function loadTab(tab) {
-  lastLineCount = 0;
   const buf = buffers[currentLessonId];
   if (!buf) return;
 

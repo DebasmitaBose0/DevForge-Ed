@@ -11,7 +11,6 @@
    Depends on: curriculum.js (CURRICULUM array must load first)
 ═══════════════════════════════════════════════════════════════ */
 
-/* global Blob, FileReader, LZString */
 /* exported
   currentLessonId,
   activeTab,
@@ -33,6 +32,7 @@
   doneSet,
   buffers,
   scrollPositions,
+  CONSOLE_MAX_LINES,
   init
 */
 "use strict";

@@ -5,6 +5,7 @@
    simply caches the full app on first load and serves from
    cache when offline.
 ═══════════════════════════════════════════════════════════ */
+/* global Response */
 
 const CACHE = "devforge-v2";
 
