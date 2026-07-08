@@ -38,7 +38,7 @@ jobs:
             This issue has been automatically closed due to inactivity.
             Feel free to re-open if it is still relevant.
           stale-issue-label: stale
-         exempt-issue-labels: "bug,security,help-wanted,good-first-issue,in-progress,gssoc,hacktoberfest"
+           exempt-issue-labels: "bug,security,help-wanted,good-first-issue,in-progress,gssoc,hacktoberfest"
 
           # PRs
           days-before-pr-stale: 90
