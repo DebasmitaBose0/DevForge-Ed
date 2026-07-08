@@ -10,6 +10,7 @@
 
 const STORAGE_KEY = "devforge:progress:v1";
 let saveTimer = null;
+let hasWarnedStorageFailure = false;
 
 // Persist XP, streak, completed-lesson ids, and per-lesson code buffers.
 function saveProgress() {
@@ -28,7 +29,12 @@ function saveProgress() {
       })
     );
   } catch {
-    return; // storage unavailable (private mode) or quota exceeded — ignore
+    if (!hasWarnedStorageFailure) {
+      hasWarnedStorageFailure = true;
+      if (typeof showToast === "function") {
+        showToast("Storage unavailable or full. Progress won't be saved! ⚠️", "error", "⚠️");
+      }
+    }
   }
 }
 
@@ -40,6 +46,24 @@ function scheduleSave() {
 
 // Restore saved progress on load, defensively validating every field.
 function loadProgress() {
+  // Test storage availability on load
+  try {
+    const testKey = "__storage_test__";
+    window.localStorage.setItem(testKey, testKey);
+    window.localStorage.removeItem(testKey);
+  } catch {
+    hasWarnedStorageFailure = true;
+    setTimeout(() => {
+      if (typeof showToast === "function") {
+        showToast(
+          "Local storage is disabled/blocked. Progress won't persist across sessions! ⚠️",
+          "error",
+          "⚠️"
+        );
+      }
+    }, 1000);
+  }
+
   let data;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
