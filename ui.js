@@ -144,15 +144,36 @@ function importProgress(event) {
   reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
-      if (!data || typeof data !== "object") throw new Error("Invalid object");
-      if (data.version !== "devforge:backup:v1") throw new Error("Unsupported version");
-      if (!Number.isFinite(data.xp) || data.xp < 0) throw new Error("Invalid XP");
-      if (!Number.isFinite(data.streak) || data.streak < 0) throw new Error("Invalid Streak");
-      if (!Array.isArray(data.done)) throw new Error("Invalid Done list");
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        throw new Error("Invalid backup data structure.");
+      }
+      if (data.version !== "devforge:backup:v1") {
+        throw new Error("Unsupported backup version.");
+      }
+      if (typeof data.xp !== "number" || !Number.isInteger(data.xp) || data.xp < 0) {
+        throw new Error("Invalid XP value.");
+      }
+      if (typeof data.streak !== "number" || !Number.isInteger(data.streak) || data.streak < 0) {
+        throw new Error("Invalid streak value.");
+      }
+      if (!Array.isArray(data.done)) {
+        throw new Error("Completed lessons list is invalid.");
+      }
+
+      const validIds = new Set(getAllLessons().map(l => l.id));
+      for (const id of data.done) {
+        if (typeof id !== "string" || !validIds.has(id)) {
+          throw new Error("Contains unrecognized lesson ID.");
+        }
+      }
+
       if (!data.buffers || typeof data.buffers !== "object" || Array.isArray(data.buffers)) {
-        throw new Error("Invalid Buffers");
+        throw new Error("Editor buffers are invalid.");
       }
       for (const key of Object.keys(data.buffers)) {
+        if (!validIds.has(key)) {
+          throw new Error("Contains unrecognized lesson buffer.");
+        }
         const b = data.buffers[key];
         if (
           !b ||
@@ -161,14 +182,14 @@ function importProgress(event) {
           typeof b.css !== "string" ||
           typeof b.js !== "string"
         ) {
-          throw new Error("Invalid buffer entry: " + key);
+          throw new Error("Lesson buffers contain invalid code values.");
         }
       }
 
       pendingImportData = data;
       showImportModal();
-    } catch {
-      showToast("Invalid backup file format.", "error", "❌");
+    } catch (error) {
+      showToast(error.message || "Invalid backup file format.", "error", "❌");
     } finally {
       event.target.value = ""; // Reset input so same file can be re-selected
     }
