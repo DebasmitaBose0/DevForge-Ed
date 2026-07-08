@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   quality-checks:
-    name: Code Quality (Lint & Format)
+    name: Code Quality (Lint, Format & HTML)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
