@@ -384,6 +384,7 @@ function showToast(msg, type = "info", icon = "") {
   toast.className = `toast show ${type}`;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+  announce(msg);
 }
 
 function announce(msg) {
