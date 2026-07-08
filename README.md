@@ -40,15 +40,60 @@ Visit **[arghya29.github.io/DevForge](https://arghya29.github.io/DevForge/)** �
 
 ### Option 2 — Run locally
 
-```bash
-git clone https://github.com/arghya29/DevForge.git
-cd DevForge
-open index.html        # macOS
-xdg-open index.html    # Linux
-start index.html       # Windows
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/arghya29/DevForge.git
+   cd DevForge
+   ```
+2. **Install developer dependencies:**
+   Ensure you have [Node.js](https://nodejs.org/) installed, then run:
+   ```bash
+   npm install
+   ```
+3. **Open the App:**
+   No local server build step is required! You can open the `index.html` file directly in your browser:
+   - macOS: `open index.html`
+   - Linux: `xdg-open index.html`
+   - Windows: `start index.html`
 
-No `npm install`. No build step. It just works.
+---
+
+## 🛠️ Testing & Development Workflow
+
+DevForge uses modern tools like ESLint, Prettier, and Vitest to ensure code quality and prevent regressions.
+
+### Available Scripts
+
+Run the following commands in your terminal:
+
+- **Run all checks (Lint, Format, Tests):**
+  ```bash
+  npm run check
+  ```
+- **Run automated unit tests:**
+  ```bash
+  npm run test
+  ```
+- **Run tests in watch mode:**
+  ```bash
+  npm run test:watch
+  ```
+- **Auto-format code style:**
+  ```bash
+  npm run format:fix
+  ```
+- **Lint JavaScript files:**
+  ```bash
+  npm run lint:js
+  ```
+- **Validate HTML syntax:**
+  ```bash
+  npm run lint:html
+  ```
+
+### Adding Tests
+
+Unit and integration tests are located in the `tests/` directory and run via [Vitest](https://vitest.dev/). When adding new features or fixing bugs, please add corresponding tests in `tests/app.test.js` to ensure the core behaviors remain fully covered.
 
 ---
 
