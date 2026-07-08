@@ -22,11 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10.3.0
-       with:
+        with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           operations-per-run: 100
-
-         
 
           # Issues
           days-before-issue-stale: 60
@@ -38,7 +36,7 @@ jobs:
             This issue has been automatically closed due to inactivity.
             Feel free to re-open if it is still relevant.
           stale-issue-label: stale
-           exempt-issue-labels: "bug,security,help-wanted,good-first-issue,in-progress,gssoc,hacktoberfest"
+          exempt-issue-labels: "bug,security,help-wanted,good-first-issue,in-progress,gssoc,hacktoberfest"
 
           # PRs
           days-before-pr-stale: 90
@@ -50,4 +48,4 @@ jobs:
             This PR has been automatically closed due to inactivity.
             Please re-open if you plan to continue working on it.
           stale-pr-label: stale
-        exempt-pr-labels: "dependencies,automerge,in-progress,gssoc,hacktoberfest"
+          exempt-pr-labels: "dependencies,automerge,in-progress,gssoc,hacktoberfest"
