@@ -54,6 +54,7 @@ function editorUndo() {
   redoStacks[key].push(current);
   const prev = stack[stack.length - 1];
   applyEditorState(prev);
+  if (typeof A11y !== "undefined") A11y.announceUndoRedo("undo");
 }
 
 function editorRedo() {
@@ -65,6 +66,7 @@ function editorRedo() {
   if (!undoStacks[key]) undoStacks[key] = [];
   undoStacks[key].push(next);
   applyEditorState(next);
+  if (typeof A11y !== "undefined") A11y.announceUndoRedo("redo");
 }
 
 function applyEditorState(val) {
@@ -419,6 +421,7 @@ function executeGoToLine() {
 
   if (isNaN(lineNum) || lineNum < 1 || lineNum > lines.length) {
     if (error) error.style.display = "block";
+    if (typeof A11y !== "undefined") A11y.announce("Line number out of range", "assertive");
     return;
   }
 
@@ -440,4 +443,6 @@ function executeGoToLine() {
   const style = window.getComputedStyle(editor);
   const lh = parseFloat(style.lineHeight) || DEFAULT_LINE_HEIGHT_PX;
   editor.scrollTop = (lineNum - 1) * lh;
+
+  if (typeof A11y !== "undefined") A11y.announce(`Moved to line ${lineNum}`);
 }
