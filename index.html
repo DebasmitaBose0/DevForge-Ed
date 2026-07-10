@@ -3,6 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Apply the saved theme before first paint to prevent a flash of the
+      // default (dark) theme for users who have selected light mode. Mirrors
+      // applySavedTheme() in ui.js: dark is the default (no attribute), light is
+      // data-theme="light". Wrapped in try/catch in case localStorage is
+      // unavailable (e.g. privacy mode), falling back to the dark default.
+      try {
+        if (localStorage.getItem("devforge_theme") === "light") {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      } catch (e) {
+        /* no-op: keep the dark default */
+      }
+    </script>
     <title>DevForge — Learn by Building</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
