@@ -25,6 +25,7 @@ const PRECACHE = [
   "./lesson.js",
   "./preview.js",
   "./commands.js",
+  "./achievements.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",

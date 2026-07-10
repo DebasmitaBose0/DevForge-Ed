@@ -199,6 +199,16 @@
         >
           📊
         </button>
+        <button
+          type="button"
+          class="icon-btn"
+          id="achievementsBtn"
+          title="Achievements &amp; Badges"
+          aria-label="Open achievements modal"
+          onclick="openAchievementsModal()"
+        >
+          🏅
+        </button>
         <button type="button" class="run-btn" id="runBtn" onclick="runCode()" aria-label="Run code">
           ▶ Run
         </button>
@@ -675,6 +685,48 @@
         </ul>
       </div>
     </div>
+    <!-- Achievements & Badges Modal -->
+    <div
+      class="modal-overlay"
+      id="achievementsModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="achievementsModalTitle"
+      tabindex="-1"
+    >
+      <div class="modal achievements-modal-inner">
+        <div class="shortcuts-modal-header">
+          <h2 id="achievementsModalTitle" class="shortcuts-modal-title">
+            <span class="shortcuts-modal-icon">🏅</span>
+            Achievements &amp; Badges
+          </h2>
+          <button
+            type="button"
+            class="shortcuts-close-btn"
+            id="achievementsCloseBtn"
+            aria-label="Close achievements modal"
+            onclick="closeAchievementsModal()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="achievements-modal-body">
+          <div class="achievements-stats-bar">
+            <span class="achievements-stats-label">Progress</span>
+            <span class="achievements-stats-count" id="achievementStats">0 / 0</span>
+          </div>
+          <div class="achievement-grid" id="achievementGrid" role="list">
+            <!-- Cards injected dynamically by achievements.js -->
+          </div>
+        </div>
+
+        <div class="shortcuts-modal-footer">
+          <button type="button" class="btn-cancel" onclick="closeAchievementsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Keyboard Shortcuts Modal (#76) -->
     <div
       class="modal-overlay"
@@ -934,6 +986,7 @@
     <script src="storage.js"></script>
     <script src="analytics.js"></script>
     <script src="ui.js"></script>
+    <script src="achievements.js"></script>
     <script src="editor.js"></script>
     <script src="lesson.js"></script>
     <script src="preview.js"></script>

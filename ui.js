@@ -2,7 +2,8 @@
    DevForge — ui.js
    All user-interface helpers: modals, toast, theme, sidebar,
    font-size, resizer, import/export, completion banner, confetti,
-   progress bar, autorun, preview size, keyboard shortcuts modal.
+   progress bar, autorun, preview size, keyboard shortcuts modal,
+   achievement toast notifications.
    Depends on: shared state in app.js, storage.js, analytics.js
 ═══════════════════════════════════════════════════════════════ */
 /* exported
@@ -35,6 +36,7 @@
   restartAll,
   spawnConfetti,
   showToast,
+  showAchievementToast,
   announce,
   initResizer,
   toggleSidebar,
@@ -115,6 +117,7 @@ function exportProgress() {
       streak: streak,
       done: Array.from(doneSet),
       buffers: buffers,
+      achievements: typeof getAchievementData === "function" ? getAchievementData() : {},
     };
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -213,6 +216,17 @@ function confirmImportProgress() {
       buffers[id] = { html: b.html, css: b.css, js: b.js };
     });
 
+    // Restore achievements from backup if present
+    if (
+      pendingImportData.achievements &&
+      typeof pendingImportData.achievements === "object" &&
+      !Array.isArray(pendingImportData.achievements)
+    ) {
+      if (typeof setAchievementData === "function") {
+        setAchievementData(pendingImportData.achievements);
+      }
+    }
+
     saveProgress();
     hideImportModal();
 
@@ -222,6 +236,9 @@ function confirmImportProgress() {
     buildSidebar();
     loadLesson(currentLessonId, { trackProgress: false });
     updateProgress();
+    if (typeof checkAchievements === "function") {
+      checkAchievements();
+    }
 
     showToast("Progress restored successfully!", "success", "✅");
   } catch {
@@ -406,6 +423,18 @@ function showToast(msg, type = "info", icon = "") {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
   announce(msg);
+}
+
+function showAchievementToast(title, description, icon) {
+  const toast = document.getElementById("toast");
+  document.getElementById("toastIcon").textContent = icon || "🏅";
+  document.getElementById("toastMsg").textContent = "🏆 " + title + " — " + description;
+  toast.className = "toast show success";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 4500);
+  announce("Achievement unlocked: " + title);
 }
 
 function announce(msg) {
