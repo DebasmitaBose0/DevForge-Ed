@@ -8,7 +8,8 @@
 /* exported saveProgress, scheduleSave, loadProgress, clearProgress */
 "use strict";
 
-const STORAGE_KEY = "devforge:progress:v1";
+const STORAGE_KEY = "devforge:progress:v2";
+const SAVE_DEBOUNCE_MS = 800;
 let saveTimer = null;
 let hasWarnedStorageFailure = false;
 
@@ -41,7 +42,7 @@ function saveProgress() {
 // Debounced save so we don't write to storage on every keystroke.
 function scheduleSave() {
   if (saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveProgress, 500);
+  saveTimer = setTimeout(saveProgress, SAVE_DEBOUNCE_MS);
 }
 
 // Restore saved progress on load, defensively validating every field.

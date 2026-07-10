@@ -67,6 +67,7 @@ const scrollPositions = {}; // { [lessonId_tab]: scrollTop }
    BOOTSTRAP / INIT
 ══════════════════════════════════════════════════════════ */
 function init() {
+  PerformanceMonitor.mark("bootstrapStart");
   applySavedTheme();
   loadProgress();
   buildSidebar();
@@ -103,6 +104,9 @@ function init() {
 
   // Check for snapshot link on load
   checkSnapshotOnLoad();
+
+  PerformanceMonitor.mark("initComplete");
+  PerformanceMonitor.measure("full-init", "bootstrapStart", "initComplete");
 
   console.info("DevForge initialised — " + getAllLessons().length + " lessons ready.");
 }
