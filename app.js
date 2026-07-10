@@ -402,3 +402,9 @@ window.generateSnapshot = generateSnapshot;
 window.checkSnapshotOnLoad = checkSnapshotOnLoad;
 window.enterReadOnlyMode = enterReadOnlyMode;
 window.forkSnapshot = forkSnapshot;
+
+// Snippet Manager
+window.SnippetManager = SnippetManager;
+window.openSnippetModal = openSnippetModal;
+window.closeSnippetModal = closeSnippetModal;
+window.saveSnippetFromModal = saveSnippetFromModal;

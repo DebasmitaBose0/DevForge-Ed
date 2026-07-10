@@ -199,6 +199,16 @@
         >
           📊
         </button>
+        <button
+          type="button"
+          class="icon-btn"
+          id="snippetBtn"
+          title="Code Snippets"
+          aria-label="Open code snippet manager"
+          onclick="openSnippetModal()"
+        >
+          📌
+        </button>
         <button type="button" class="run-btn" id="runBtn" onclick="runCode()" aria-label="Run code">
           ▶ Run
         </button>
@@ -571,6 +581,61 @@
        FLOATING PANELS
   ══════════════════════════════════════ -->
 
+    <!-- Snippet Manager Modal -->
+    <div
+      class="modal-overlay"
+      id="snippetModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="snippetModalTitle"
+      tabindex="-1"
+    >
+      <div class="modal snippet-modal-inner">
+        <div class="shortcuts-modal-header">
+          <h2 id="snippetModalTitle" class="shortcuts-modal-title">
+            <span class="shortcuts-modal-icon">📌</span>
+            Code Snippets
+          </h2>
+          <button
+            type="button"
+            class="shortcuts-close-btn"
+            aria-label="Close snippet manager"
+            onclick="closeSnippetModal()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="snippet-modal-body">
+          <div class="snippet-save-area">
+            <label for="snippetNameInput" class="snippet-label">Save current code as snippet:</label>
+            <div class="snippet-save-row">
+              <input
+                type="text"
+                id="snippetNameInput"
+                class="snippet-name-input"
+                placeholder="My snippet name..."
+                maxlength="100"
+                onkeydown="if(event.key==='Enter')saveSnippetFromModal()"
+              />
+              <button type="button" class="btn-confirm snippet-save-btn" onclick="saveSnippetFromModal()">
+                Save
+              </button>
+            </div>
+          </div>
+
+          <div class="snippet-divider"></div>
+
+          <label class="snippet-label">Saved snippets:</label>
+          <ul class="snippet-list" id="snippetList"></ul>
+        </div>
+
+        <div class="shortcuts-modal-footer">
+          <button type="button" class="btn-cancel" onclick="closeSnippetModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Learner Analytics Modal (#79) -->
     <div
       class="modal-overlay"
@@ -938,6 +1003,7 @@
     <script src="lesson.js"></script>
     <script src="preview.js"></script>
     <script src="commands.js"></script>
+    <script src="snippet.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
