@@ -29,3 +29,7 @@ npm-debug.log*
 .env
 .env.local
 
+# Dev container env files (but not the example)
+.devcontainer/*.env
+!.devcontainer/devcontainer.env.example
+
