@@ -103,7 +103,7 @@ Unit and integration tests are located in the `tests/` directory and run via [Vi
 DevForge/
 ├── index.html              # Pure HTML structure — zero inline styles or scripts
 ├── styles.css              # All CSS — variables, layout, components, animations
-├── curriculum.js           # All 16 lesson objects with starter code + instructions
+├── curriculum.js           # All 19 lesson objects with starter code + instructions
 ├── app.js                  # All application logic — editor, preview, XP, shortcuts
 │
 ├── README.md
@@ -141,27 +141,29 @@ DevForge/
 
 ---
 
-## 📚 Curriculum (16 lessons · 455 XP total)
+## 📚 Curriculum (19 lessons · 545 XP total)
 
 ### HTML Foundations
 
-| #   | Lesson                | XP  |
-| --- | --------------------- | --- |
-| 01  | Your First Element    | 20  |
-| 02  | Headings & Paragraphs | 20  |
-| 03  | Lists & Links         | 20  |
-| 04  | Images & Attributes   | 20  |
-| 05  | Forms & Inputs        | 30  |
+| #   | Lesson                      | XP  |
+| --- | --------------------------- | --- |
+| 01  | Your First Element          | 20  |
+| 02  | Headings & Paragraphs       | 20  |
+| 03  | Lists & Links               | 20  |
+| 04  | Images & Attributes         | 20  |
+| 05  | Forms & Inputs              | 30  |
+| 06  | Semantic HTML Elements      | 30  |
 
 ### CSS Styling
 
-| #   | Lesson                   | XP  |
-| --- | ------------------------ | --- |
-| 01  | Selectors & Specificity  | 25  |
-| 02  | The Box Model            | 25  |
-| 03  | Flexbox Layout           | 30  |
-| 04  | CSS Grid                 | 30  |
-| 05  | Transitions & Animations | 35  |
+| #   | Lesson                      | XP  |
+| --- | --------------------------- | --- |
+| 01  | Selectors & Specificity     | 25  |
+| 02  | The Box Model               | 25  |
+| 03  | Flexbox Layout              | 30  |
+| 04  | CSS Grid                    | 30  |
+| 05  | Transitions & Animations    | 35  |
+| 06  | Flexbox Layout (advanced)   | 30  |
 
 ### JavaScript
 
@@ -173,6 +175,7 @@ DevForge/
 | 04  | DOM Manipulation            | 30  |
 | 05  | Fetch & Async/Await         | 40  |
 | 06  | Build a Todo App (capstone) | 50  |
+| 07  | JavaScript Classes & OOP    | 35  |
 
 ---
 
@@ -196,7 +199,7 @@ DevForge/
 | **PWA Offline**         | Installable as standalone app; works offline once loaded          |
 | **Keyboard Shortcuts**  | Full set — see table below                                        |
 | **Dark/Light Theme**    | Toggle between dark and light mode with a persistent preference   |
-| **Completion Confetti** | Celebration when all 16 lessons are done                          |
+| **Completion Confetti** | Celebration when all 19 lessons are done                          |
 
 ### ⌨ Keyboard Shortcuts
 
