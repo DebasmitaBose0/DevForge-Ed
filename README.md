@@ -16,7 +16,7 @@ A fully client-side, **zero-dependency** interactive coding environment for lear
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  ⚡ DevForge     [HTML] [CSS] [JS]      Auto  0/16 ░░░░  Aa  ⌨  ▶ Run │
+│  ⚡ DevForge     [HTML] [CSS] [JS]      Auto  0/19 ░░░░  Aa  ⌨  ▶ Run │
 ├────────────┬──────────────────────────┬───┬────────────────────────┤
 │            │  1  <!DOCTYPE html>       │   │  🟢 LIVE PREVIEW       │
 │ Curriculum │  2  <html lang="en">      │   │                        │
