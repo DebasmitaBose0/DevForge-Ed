@@ -2046,6 +2046,65 @@ header {
   border-color: var(--cyan);
 }
 
+/* Layout preset panel */
+.layout-panel {
+  position: fixed;
+  top: 60px;
+  right: 86px;
+  z-index: 300;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 160px;
+  box-shadow: 0 6px 24px var(--shadow-medium);
+  transform: scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.18s;
+}
+.layout-panel.show {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: all;
+}
+.layout-panel-header {
+  padding: 4px 8px 8px;
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.layout-preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.layout-preset-btn {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 0.76rem;
+  text-align: left;
+  transition: all 0.12s;
+}
+.layout-preset-btn:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--border);
+}
+.layout-preset-btn.active {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
 /* Font size panel */
 .fs-panel {
   position: fixed;

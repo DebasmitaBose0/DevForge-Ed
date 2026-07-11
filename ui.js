@@ -23,6 +23,7 @@
   copyAllCode,
   changeFontSize,
   toggleFsPanel,
+  toggleLayoutPanel,
   openShortcutsModal,
   closeShortcutsModal,
   toggleShortcuts,
@@ -279,10 +280,45 @@ function toggleFsPanel() {
 }
 
 /* ══════════════════════════════════════════════════════════
+   LAYOUT PRESET PANEL
+══════════════════════════════════════════════════════════ */
+function toggleLayoutPanel() {
+  layoutPanelVisible = !layoutPanelVisible;
+  document.getElementById("layoutPanel").classList.toggle("show", layoutPanelVisible);
+  document.getElementById("layoutBtn").classList.toggle("active", layoutPanelVisible);
+  if (layoutPanelVisible) {
+    renderLayoutPresets();
+  }
+  if (fsPanelVisible) toggleFsPanel();
+  if (document.getElementById("shortcutsModal").classList.contains("show")) closeShortcutsModal();
+}
+
+function renderLayoutPresets() {
+  const list = document.getElementById("layoutPresetList");
+  if (!list) return;
+  const presets = LayoutManager.getPresets();
+  const active = LayoutManager.getActivePreset();
+  list.innerHTML = presets
+    .map(
+      p =>
+        `<button type="button" class="layout-preset-btn${p.id === active ? " active" : ""}" data-preset="${p.id}">${p.label}</button>`
+    )
+    .join("");
+  list.querySelectorAll(".layout-preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      LayoutManager.applyPreset(btn.dataset.preset);
+      document.getElementById("layoutPanel").classList.remove("show");
+      document.getElementById("layoutBtn").classList.remove("active");
+      layoutPanelVisible = false;
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
    KEYBOARD SHORTCUTS MODAL  (#76 — sanket1035)
    Replaces old floating panel with a proper accessible modal.
    Triggered by: ? key (when not in editor), ⌨ button, ? button.
-══════════════════════════════════════════════════════════ */
+╔══════════════════════════════════════════════════════════ */
 function openShortcutsModal() {
   if (fsPanelVisible) toggleFsPanel(); // close any open floating panel first
   openModal(document.getElementById("shortcutsModal"));
@@ -461,6 +497,9 @@ function initResizer() {
     resizer.classList.remove("dragging");
     document.body.style.userSelect = "";
     document.body.style.cursor = "";
+    if (typeof LayoutManager !== "undefined" && LayoutManager.saveCurrentLayout) {
+      LayoutManager.saveCurrentLayout();
+    }
   }
 
   resizer.addEventListener("mousedown", startDrag);

@@ -58,6 +58,7 @@ let consoleScrolledUp = false;
 const CONSOLE_MAX_LINES = 200;
 let consoleLineCount = 0;
 let isReadOnlyMode = false;
+let layoutPanelVisible = false;
 
 const doneSet = new Set(); // lesson ids that have been run at least once
 const buffers = {}; // { [lessonId]: { html, css, js } }  — user edits
@@ -99,6 +100,11 @@ function init() {
     const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
     sidebarToggleBtn.classList.add("active");
     sidebarToggleBtn.setAttribute("aria-expanded", "false");
+  }
+
+  // Initialize layout manager
+  if (typeof LayoutManager !== "undefined") {
+    LayoutManager.init();
   }
 
   // Check for snapshot link on load
@@ -273,6 +279,9 @@ document.addEventListener("click", e => {
   if (fsPanelVisible && !e.target.closest("#fsPanel") && !e.target.closest("#fsSizeBtn")) {
     toggleFsPanel();
   }
+  if (layoutPanelVisible && !e.target.closest("#layoutPanel") && !e.target.closest("#layoutBtn")) {
+    toggleLayoutPanel();
+  }
   const popover = document.getElementById("goToLinePopover");
   if (
     popover &&
@@ -363,6 +372,9 @@ window.toggleConsole = toggleConsole;
 window.filterConsole = filterConsole;
 window.clearConsoleFilter = clearConsoleFilter;
 window.copyConsoleText = copyConsoleText;
+// Layout panel
+window.toggleLayoutPanel = toggleLayoutPanel;
+
 // Font size
 window.changeFontSize = changeFontSize;
 // Reset modal

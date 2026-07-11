@@ -161,6 +161,18 @@
         <button
           type="button"
           class="icon-btn"
+          id="layoutBtn"
+          title="Workspace layout"
+          aria-label="Change workspace layout"
+          aria-haspopup="true"
+          aria-expanded="false"
+          onclick="toggleLayoutPanel()"
+        >
+          🎨
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
           id="themeToggleBtn"
           title="Toggle theme"
           aria-label="Toggle dark/light theme"
@@ -825,6 +837,16 @@
       </div>
     </div>
 
+    <!-- Layout Preset Panel -->
+    <div class="layout-panel" id="layoutPanel">
+      <div class="layout-panel-header">
+        <span class="layout-panel-title">Layout Presets</span>
+      </div>
+      <div class="layout-preset-list" id="layoutPresetList">
+        <!-- Injected by LayoutManager -->
+      </div>
+    </div>
+
     <!-- Font Size Panel -->
     <div class="fs-panel" id="fsPanel">
       <label for="fsSlider">
@@ -938,6 +960,7 @@
     <script src="lesson.js"></script>
     <script src="preview.js"></script>
     <script src="commands.js"></script>
+    <script src="layout.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

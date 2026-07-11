@@ -26,6 +26,7 @@ function saveProgress() {
         hints: revealedHints, // Persist progressive hints count (#77)
         autorun: autorun,
         fontSize: fontSize,
+        layout: typeof LayoutManager !== "undefined" && LayoutManager._current ? LayoutManager._current : undefined,
       })
     );
   } catch {
