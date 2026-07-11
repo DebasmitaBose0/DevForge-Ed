@@ -402,3 +402,8 @@ window.generateSnapshot = generateSnapshot;
 window.checkSnapshotOnLoad = checkSnapshotOnLoad;
 window.enterReadOnlyMode = enterReadOnlyMode;
 window.forkSnapshot = forkSnapshot;
+
+// Code Exporter
+window.CodeExporter = CodeExporter;
+window.toggleExportMenu = toggleExportMenu;
+window.closeExportMenu = closeExportMenu;

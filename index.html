@@ -480,6 +480,24 @@
             >
               ⎘
             </button>
+            <div class="export-btn-wrap">
+              <button
+                type="button"
+                class="icon-btn"
+                id="exportFormatBtn"
+                title="Export code"
+                aria-label="Export code in multiple formats"
+                onclick="toggleExportMenu()"
+              >
+                ⬇
+              </button>
+              <div class="export-menu" id="exportMenu" role="menu" aria-label="Export format menu">
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportAsStandaloneHtml(); closeExportMenu();">Standalone HTML</button>
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportAsCodePen(); closeExportMenu();">Open in CodePen</button>
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportAsJSFiddle(); closeExportMenu();">Open in JSFiddle</button>
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportCurrentTab(); closeExportMenu();">Export Current Tab</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -938,6 +956,7 @@
     <script src="lesson.js"></script>
     <script src="preview.js"></script>
     <script src="commands.js"></script>
+    <script src="export.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
