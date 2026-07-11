@@ -1,16 +1,68 @@
 /* ═══════════════════════════════════════════════════════════════
    DevForge — storage.js
    Persistence: save / restore / clear learner progress via
-   localStorage.
+   localStorage. Keeps last 3 snapshots for rollback and
+   validates/auto-repairs data on load.
    Depends on: shared state declared in app.js (xp, streak,
    doneSet, buffers, revealedHints, autorun)
-═══════════════════════════════════════════════════════════════ */
+╔═══════════════════════════════════════════════════════════════ */
 /* exported saveProgress, scheduleSave, loadProgress, clearProgress */
 "use strict";
 
 const STORAGE_KEY = "devforge:progress:v1";
+const SNAPSHOT_STORAGE_KEY = "devforge:snapshots:v1";
+const RECOVERY_POINT_KEY = "devforge:recovery:point:v1";
+const MAX_KEEP_SNAPSHOTS = 3;
 let saveTimer = null;
 let hasWarnedStorageFailure = false;
+
+function getSnapshots() {
+  try {
+    const raw = window.localStorage.getItem(SNAPSHOT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSnapshots(snapshots) {
+  try {
+    window.localStorage.setItem(SNAPSHOT_STORAGE_KEY, JSON.stringify(snapshots));
+  } catch {
+    /* non-critical */
+  }
+}
+
+function storeRecoveryPoint() {
+  try {
+    window.localStorage.setItem(
+      RECOVERY_POINT_KEY,
+      JSON.stringify({ timestamp: Date.now(), currentLessonId: currentLessonId })
+    );
+  } catch {
+    /* non-critical */
+  }
+}
+
+function takeSnapshot() {
+  try {
+    const snapshots = getSnapshots();
+    snapshots.push({
+      timestamp: Date.now(),
+      xp: xp,
+      streak: streak,
+      done: Array.from(doneSet),
+      buffers: JSON.parse(JSON.stringify(buffers)),
+    });
+    while (snapshots.length > MAX_KEEP_SNAPSHOTS) snapshots.shift();
+    saveSnapshots(snapshots);
+    storeRecoveryPoint();
+  } catch {
+    /* non-critical */
+  }
+}
 
 // Persist XP, streak, completed-lesson ids, and per-lesson code buffers.
 function saveProgress() {
@@ -29,6 +81,7 @@ function saveProgress() {
         layout: typeof LayoutManager !== "undefined" && LayoutManager._current ? LayoutManager._current : undefined,
       })
     );
+    takeSnapshot();
   } catch {
     if (!hasWarnedStorageFailure) {
       hasWarnedStorageFailure = true;
@@ -125,6 +178,55 @@ function loadProgress() {
     const label = document.getElementById("fsValLabel");
     if (label) label.textContent = data.fontSize;
   }
+
+  // Auto-repair: validate state consistency after load
+  {
+    const allLessons = getAllLessons();
+    const valIds = new Set(allLessons.map(l => l.id));
+    if (currentLessonId && !valIds.has(currentLessonId)) {
+      currentLessonId = allLessons.length > 0 ? allLessons[0].lessons[0].id : null;
+    }
+    if (typeof xp !== "number" || !Number.isFinite(xp) || xp < 0) xp = 0;
+    if (typeof streak !== "number" || !Number.isFinite(streak) || streak < 0) streak = 0;
+    doneSet.forEach(id => { if (!valIds.has(id)) doneSet.delete(id); });
+    Object.keys(buffers).forEach(id => {
+      if (!valIds.has(id)) { delete buffers[id]; return; }
+      const b = buffers[id];
+      if (!b || typeof b !== "object" || typeof b.html !== "string" || typeof b.css !== "string" || typeof b.js !== "string") {
+        delete buffers[id];
+      }
+    });
+  }
+
+  // Restore from recovery flag set by offline error page
+  try {
+    if (window.localStorage.getItem("devforge:recovery:restore") === "1") {
+      window.localStorage.removeItem("devforge:recovery:restore");
+      const snapshots = getSnapshots();
+      if (snapshots.length > 0) {
+        const snap = snapshots[snapshots.length - 1];
+        if (typeof snap.xp === "number" && Number.isFinite(snap.xp) && snap.xp >= 0) xp = snap.xp;
+        if (typeof snap.streak === "number" && Number.isFinite(snap.streak) && snap.streak >= 0) streak = snap.streak;
+        if (Array.isArray(snap.done)) {
+          doneSet.clear();
+          const valIds = new Set(getAllLessons().map(l => l.id));
+          snap.done.forEach(id => { if (valIds.has(id)) doneSet.add(id); });
+        }
+        if (snap.buffers && typeof snap.buffers === "object") {
+          Object.keys(buffers).forEach(k => delete buffers[k]);
+          const valIds = new Set(getAllLessons().map(l => l.id));
+          Object.keys(snap.buffers).forEach(id => {
+            if (!valIds.has(id)) return;
+            const b = snap.buffers[id];
+            if (b && typeof b === "object" && typeof b.html === "string" && typeof b.css === "string" && typeof b.js === "string") {
+              buffers[id] = { html: b.html, css: b.css, js: b.js };
+            }
+          });
+        }
+        console.info("[Recovery] Restored from snapshot via recovery flag");
+      }
+    }
+  } catch { /* ignore */ }
 }
 
 // Wipe persisted progress (used by the Restart flow).

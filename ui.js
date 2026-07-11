@@ -4,7 +4,7 @@
    font-size, resizer, import/export, completion banner, confetti,
    progress bar, autorun, preview size, keyboard shortcuts modal.
    Depends on: shared state in app.js, storage.js, analytics.js
-═══════════════════════════════════════════════════════════════ */
+╔═══════════════════════════════════════════════════════════════ */
 /* exported
   activeModalEl,
   modalReturnFocus,
@@ -97,7 +97,7 @@ function hideResetModal() {
 /* ══════════════════════════════════════════════════════════
    IMPORT / EXPORT BACKUP SYSTEM  (#78 — sanket1035)
    Allows learners to download progress as JSON and restore it.
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function showImportModal() {
   openModal(document.getElementById("importConfirmModal"));
 }
@@ -247,7 +247,7 @@ function confirmReset() {
 
 /* ══════════════════════════════════════════════════════════
    COPY ALL CODE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function copyAllCode() {
   const buf = buffers[currentLessonId];
   if (!buf) return;
@@ -264,7 +264,7 @@ function copyAllCode() {
 
 /* ══════════════════════════════════════════════════════════
    FONT SIZE CONTROL
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function changeFontSize(val) {
   document.documentElement.style.setProperty("--fs", val + "px");
   document.getElementById("fsValLabel").textContent = val + "px";
@@ -318,7 +318,7 @@ function renderLayoutPresets() {
    KEYBOARD SHORTCUTS MODAL  (#76 — sanket1035)
    Replaces old floating panel with a proper accessible modal.
    Triggered by: ? key (when not in editor), ⌨ button, ? button.
-╔══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function openShortcutsModal() {
   if (fsPanelVisible) toggleFsPanel(); // close any open floating panel first
   openModal(document.getElementById("shortcutsModal"));
@@ -339,7 +339,7 @@ function toggleShortcuts() {
 
 /* ══════════════════════════════════════════════════════════
    THEME TOGGLE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function updateThemeButton() {
   const btn = document.getElementById("themeToggleBtn");
   if (btn) {
@@ -381,7 +381,7 @@ function applySavedTheme() {
 
 /* ══════════════════════════════════════════════════════════
    COMPLETION BANNER + CONFETTI
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function showCompletion() {
   document.getElementById("finalXp").textContent = xp;
   openModal(document.getElementById("completionBanner"));
@@ -433,7 +433,39 @@ function spawnConfetti() {
 
 /* ══════════════════════════════════════════════════════════
    TOAST NOTIFICATION
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
+function showRecoveryToast(msg) {
+  const indicator = document.getElementById("recoveryIndicator");
+  if (indicator) {
+    document.getElementById("recoveryIndicatorText").textContent = msg;
+    indicator.removeAttribute("hidden");
+    clearTimeout(indicator._hideTimer);
+    indicator._hideTimer = setTimeout(() => {
+      indicator.setAttribute("hidden", "");
+    }, 4000);
+  }
+  showToast(msg, "info", "🔄");
+}
+
+function recoverLastSession() {
+  if (typeof RecoveryManager === "undefined") {
+    showToast("Recovery system not available.", "error", "❌");
+    return;
+  }
+  const restored = RecoveryManager.restoreLatestSnapshot();
+  if (restored) {
+    saveProgress();
+    document.getElementById("xpVal").textContent = xp;
+    document.getElementById("streakLabel").textContent = `🔥 ${streak} streak`;
+    buildSidebar();
+    loadLesson(currentLessonId, { trackProgress: false });
+    updateProgress();
+    showRecoveryToast("Last session restored successfully ✅");
+  } else {
+    showToast("No recoverable state found.", "warn", "⚠️");
+  }
+}
+
 function showToast(msg, type = "info", icon = "") {
   const toast = document.getElementById("toast");
   document.getElementById("toastIcon").textContent = icon;
@@ -457,7 +489,7 @@ function announce(msg) {
 /* ══════════════════════════════════════════════════════════
    DRAG RESIZER  (editor ↔ preview panel)
    Supports mouse + touch for mobile/tablet devices.
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function initResizer() {
   const resizer = document.getElementById("resizer");
   const workspace = document.getElementById("workspace");
@@ -513,7 +545,7 @@ function initResizer() {
 
 /* ══════════════════════════════════════════════════════════
    SIDEBAR TOGGLE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
 
@@ -527,10 +559,12 @@ function toggleSidebar() {
 }
 
 window.toggleSidebar = toggleSidebar;
+window.recoverLastSession = recoverLastSession;
+window.showRecoveryToast = showRecoveryToast;
 
 /* ══════════════════════════════════════════════════════════
    LESSON PANE (collapsible instruction area)
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function toggleLessonPane() {
   lessonPaneOpen = !lessonPaneOpen;
   document.getElementById("lessonPane").classList.toggle("collapsed", !lessonPaneOpen);
@@ -545,7 +579,7 @@ function toggleLessonPane() {
 
 /* ══════════════════════════════════════════════════════════
    PROGRESS BAR
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function updateProgress() {
   const total = getAllLessons().length;
   const done = doneSet.size;
@@ -561,7 +595,7 @@ function updateProgress() {
 
 /* ══════════════════════════════════════════════════════════
    AUTO-RUN TOGGLE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function toggleAutorun() {
   autorun = !autorun;
   document.getElementById("autorunToggle").classList.toggle("on", autorun);
@@ -578,7 +612,7 @@ function toggleAutorun() {
 
 /* ══════════════════════════════════════════════════════════
    PREVIEW SIZE  (desktop / tablet / mobile)
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function setPreviewSize(size) {
   const frame = document.getElementById("previewFrame");
   frame.className = "preview-iframe" + (size === "desktop" ? "" : " " + size);

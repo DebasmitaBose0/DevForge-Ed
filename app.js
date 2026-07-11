@@ -108,6 +108,11 @@ function init() {
   }
 
   // Check for snapshot link on load
+  // Initialize layout manager
+  if (typeof LayoutManager !== "undefined") {
+    LayoutManager.init();
+  }
+
   checkSnapshotOnLoad();
 
   console.info("DevForge initialised — " + getAllLessons().length + " lessons ready.");
