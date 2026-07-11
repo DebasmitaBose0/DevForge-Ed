@@ -102,6 +102,11 @@ function init() {
     sidebarToggleBtn.setAttribute("aria-expanded", "false");
   }
 
+  // Initialize layout manager
+  if (typeof LayoutManager !== "undefined") {
+    LayoutManager.init();
+  }
+
   // Check for snapshot link on load
   // Initialize layout manager
   if (typeof LayoutManager !== "undefined") {
