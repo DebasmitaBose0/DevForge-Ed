@@ -161,6 +161,18 @@
         <button
           type="button"
           class="icon-btn"
+          id="layoutBtn"
+          title="Workspace layout"
+          aria-label="Change workspace layout"
+          aria-haspopup="true"
+          aria-expanded="false"
+          onclick="toggleLayoutPanel()"
+        >
+          🎨
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
           id="themeToggleBtn"
           title="Toggle theme"
           aria-label="Toggle dark/light theme"
@@ -490,6 +502,24 @@
             >
               ⎘
             </button>
+            <div class="export-btn-wrap">
+              <button
+                type="button"
+                class="icon-btn"
+                id="exportFormatBtn"
+                title="Export code"
+                aria-label="Export code in multiple formats"
+                onclick="toggleExportMenu()"
+              >
+                ⬇
+              </button>
+              <div class="export-menu" id="exportMenu" role="menu" aria-label="Export format menu">
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportAsStandaloneHtml(); closeExportMenu();">Standalone HTML</button>
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportAsCodePen(); closeExportMenu();">Open in CodePen</button>
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportAsJSFiddle(); closeExportMenu();">Open in JSFiddle</button>
+                <button type="button" class="export-menu-item" role="menuitem" onclick="CodeExporter.exportCurrentTab(); closeExportMenu();">Export Current Tab</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -877,6 +907,16 @@
       </div>
     </div>
 
+    <!-- Layout Preset Panel -->
+    <div class="layout-panel" id="layoutPanel">
+      <div class="layout-panel-header">
+        <span class="layout-panel-title">Layout Presets</span>
+      </div>
+      <div class="layout-preset-list" id="layoutPresetList">
+        <!-- Injected by LayoutManager -->
+      </div>
+    </div>
+
     <!-- Font Size Panel -->
     <div class="fs-panel" id="fsPanel">
       <label for="fsSlider">
@@ -991,6 +1031,8 @@
     <script src="lesson.js"></script>
     <script src="preview.js"></script>
     <script src="commands.js"></script>
+    <script src="export.js"></script>
+    <script src="layout.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
