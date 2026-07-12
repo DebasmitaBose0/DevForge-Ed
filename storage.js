@@ -68,6 +68,8 @@ function takeSnapshot() {
 function saveProgress() {
   try {
     const fontSize = getComputedStyle(document.documentElement).getPropertyValue("--fs").trim();
+    const achievementsData =
+      typeof getAchievementData === "function" ? getAchievementData() : {};
     window.localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
@@ -78,6 +80,7 @@ function saveProgress() {
         hints: revealedHints, // Persist progressive hints count (#77)
         autorun: autorun,
         fontSize: fontSize,
+        achievements: achievementsData, // Persist unlocked achievements
         layout: typeof LayoutManager !== "undefined" && LayoutManager._current ? LayoutManager._current : undefined,
       })
     );
@@ -178,6 +181,11 @@ function loadProgress() {
     const label = document.getElementById("fsValLabel");
     if (label) label.textContent = data.fontSize;
   }
+  if (data.achievements && typeof data.achievements === "object" && !Array.isArray(data.achievements)) {
+    if (typeof setAchievementData === "function") {
+      setAchievementData(data.achievements);
+    }
+  }
 
   // Auto-repair: validate state consistency after load
   {
@@ -236,6 +244,9 @@ function clearProgress() {
     saveTimer = null;
   }
   revealedHints = {}; // Reset progressive hints on restart (#77)
+  if (typeof clearAchievementData === "function") {
+    clearAchievementData();
+  }
   try {
     window.localStorage.removeItem(STORAGE_KEY);
   } catch {
