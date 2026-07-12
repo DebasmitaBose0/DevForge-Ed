@@ -2594,3 +2594,41 @@ header {
   white-space: nowrap;
   border: 0;
 }
+
+/* Export format menu */
+.export-btn-wrap {
+  position: relative;
+}
+.export-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 100;
+  min-width: 180px;
+  padding: 4px;
+  margin-top: 4px;
+}
+.export-menu.show {
+  display: block;
+}
+.export-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: none;
+  color: var(--fg);
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.export-menu-item:hover {
+  background: var(--hover);
+}
