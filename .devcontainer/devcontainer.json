@@ -1,5 +1,5 @@
 {
-  "name": "DevForge Development Container",
+  "name": "DevForge Development",
   "build": {
     "dockerfile": "Dockerfile"
   },
@@ -9,7 +9,9 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "cschleiden.vscode-html-validate"
+        "html-validate.vscode-html-validate",
+        "bierner.github-markdown-preview",
+        "EditorConfig.EditorConfig"
       ],
       "settings": {
         "editor.formatOnSave": true,
@@ -17,10 +19,12 @@
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"
         },
-        "html.validate.enable": true
+        "html.validate.enable": true,
+        "files.eol": "\n",
+        "prettier.requireConfig": true
       }
     }
   },
-  "postCreateCommand": "npm install",
+  "postCreateCommand": "npm ci",
   "remoteUser": "node"
 }

@@ -84,6 +84,35 @@ your fork / feature branch
 
 ---
 
+## Getting Started with Dev Containers
+
+DevForge provides a [Development Container](https://containers.dev/) configuration for VS Code and GitHub Codespaces, giving you a consistent, pre-configured environment with all tools installed.
+
+### Using GitHub Codespaces
+
+1. Click the **"Code"** button on the repository
+2. Select the **"Codespaces"** tab
+3. Click **"Create codespace on main"**
+4. Wait for the environment to build — all npm dependencies install automatically
+
+### Using VS Code Dev Containers locally
+
+1. Install [Docker](https://docker.com) and the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/arghya29/DevForge.git
+   cd DevForge
+   ```
+3. Open the folder in VS Code — you'll be prompted to **"Reopen in Container"**
+4. Click the prompt or run **Ctrl+Shift+P → Dev Containers: Reopen in Container**
+5. The container builds automatically with Node.js, ESLint, Prettier, and html-validate pre-installed
+
+### Optional environment variables
+
+Copy `.devcontainer/devcontainer.env.example` to `.devcontainer/devcontainer.env` and modify as needed.
+
+---
+
 ## How to Contribute
 
 ### 1. Fork & Clone

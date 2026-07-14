@@ -2,9 +2,10 @@
    DevForge — ui.js
    All user-interface helpers: modals, toast, theme, sidebar,
    font-size, resizer, import/export, completion banner, confetti,
-   progress bar, autorun, preview size, keyboard shortcuts modal.
+   progress bar, autorun, preview size, keyboard shortcuts modal,
+   achievement toast notifications.
    Depends on: shared state in app.js, storage.js, analytics.js
-═══════════════════════════════════════════════════════════════ */
+╔═══════════════════════════════════════════════════════════════ */
 /* exported
   activeModalEl,
   modalReturnFocus,
@@ -23,6 +24,7 @@
   copyAllCode,
   changeFontSize,
   toggleFsPanel,
+  toggleLayoutPanel,
   openShortcutsModal,
   closeShortcutsModal,
   toggleShortcuts,
@@ -35,6 +37,7 @@
   restartAll,
   spawnConfetti,
   showToast,
+  showAchievementToast,
   announce,
   initResizer,
   toggleSidebar,
@@ -96,7 +99,7 @@ function hideResetModal() {
 /* ══════════════════════════════════════════════════════════
    IMPORT / EXPORT BACKUP SYSTEM  (#78 — sanket1035)
    Allows learners to download progress as JSON and restore it.
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function showImportModal() {
   openModal(document.getElementById("importConfirmModal"));
 }
@@ -115,6 +118,7 @@ function exportProgress() {
       streak: streak,
       done: Array.from(doneSet),
       buffers: buffers,
+      achievements: typeof getAchievementData === "function" ? getAchievementData() : {},
     };
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -213,6 +217,17 @@ function confirmImportProgress() {
       buffers[id] = { html: b.html, css: b.css, js: b.js };
     });
 
+    // Restore achievements from backup if present
+    if (
+      pendingImportData.achievements &&
+      typeof pendingImportData.achievements === "object" &&
+      !Array.isArray(pendingImportData.achievements)
+    ) {
+      if (typeof setAchievementData === "function") {
+        setAchievementData(pendingImportData.achievements);
+      }
+    }
+
     saveProgress();
     hideImportModal();
 
@@ -222,6 +237,9 @@ function confirmImportProgress() {
     buildSidebar();
     loadLesson(currentLessonId, { trackProgress: false });
     updateProgress();
+    if (typeof checkAchievements === "function") {
+      checkAchievements();
+    }
 
     showToast("Progress restored successfully!", "success", "✅");
   } catch {
@@ -246,7 +264,7 @@ function confirmReset() {
 
 /* ══════════════════════════════════════════════════════════
    COPY ALL CODE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function copyAllCode() {
   const buf = buffers[currentLessonId];
   if (!buf) return;
@@ -263,7 +281,7 @@ function copyAllCode() {
 
 /* ══════════════════════════════════════════════════════════
    FONT SIZE CONTROL
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function changeFontSize(val) {
   document.documentElement.style.setProperty("--fs", val + "px");
   document.getElementById("fsValLabel").textContent = val + "px";
@@ -279,10 +297,45 @@ function toggleFsPanel() {
 }
 
 /* ══════════════════════════════════════════════════════════
+   LAYOUT PRESET PANEL
+══════════════════════════════════════════════════════════ */
+function toggleLayoutPanel() {
+  layoutPanelVisible = !layoutPanelVisible;
+  document.getElementById("layoutPanel").classList.toggle("show", layoutPanelVisible);
+  document.getElementById("layoutBtn").classList.toggle("active", layoutPanelVisible);
+  if (layoutPanelVisible) {
+    renderLayoutPresets();
+  }
+  if (fsPanelVisible) toggleFsPanel();
+  if (document.getElementById("shortcutsModal").classList.contains("show")) closeShortcutsModal();
+}
+
+function renderLayoutPresets() {
+  const list = document.getElementById("layoutPresetList");
+  if (!list) return;
+  const presets = LayoutManager.getPresets();
+  const active = LayoutManager.getActivePreset();
+  list.innerHTML = presets
+    .map(
+      p =>
+        `<button type="button" class="layout-preset-btn${p.id === active ? " active" : ""}" data-preset="${p.id}">${p.label}</button>`
+    )
+    .join("");
+  list.querySelectorAll(".layout-preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      LayoutManager.applyPreset(btn.dataset.preset);
+      document.getElementById("layoutPanel").classList.remove("show");
+      document.getElementById("layoutBtn").classList.remove("active");
+      layoutPanelVisible = false;
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
    KEYBOARD SHORTCUTS MODAL  (#76 — sanket1035)
    Replaces old floating panel with a proper accessible modal.
    Triggered by: ? key (when not in editor), ⌨ button, ? button.
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function openShortcutsModal() {
   if (fsPanelVisible) toggleFsPanel(); // close any open floating panel first
   openModal(document.getElementById("shortcutsModal"));
@@ -303,7 +356,7 @@ function toggleShortcuts() {
 
 /* ══════════════════════════════════════════════════════════
    THEME TOGGLE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function updateThemeButton() {
   const btn = document.getElementById("themeToggleBtn");
   if (btn) {
@@ -345,7 +398,7 @@ function applySavedTheme() {
 
 /* ══════════════════════════════════════════════════════════
    COMPLETION BANNER + CONFETTI
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function showCompletion() {
   document.getElementById("finalXp").textContent = xp;
   openModal(document.getElementById("completionBanner"));
@@ -397,7 +450,39 @@ function spawnConfetti() {
 
 /* ══════════════════════════════════════════════════════════
    TOAST NOTIFICATION
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
+function showRecoveryToast(msg) {
+  const indicator = document.getElementById("recoveryIndicator");
+  if (indicator) {
+    document.getElementById("recoveryIndicatorText").textContent = msg;
+    indicator.removeAttribute("hidden");
+    clearTimeout(indicator._hideTimer);
+    indicator._hideTimer = setTimeout(() => {
+      indicator.setAttribute("hidden", "");
+    }, 4000);
+  }
+  showToast(msg, "info", "🔄");
+}
+
+function recoverLastSession() {
+  if (typeof RecoveryManager === "undefined") {
+    showToast("Recovery system not available.", "error", "❌");
+    return;
+  }
+  const restored = RecoveryManager.restoreLatestSnapshot();
+  if (restored) {
+    saveProgress();
+    document.getElementById("xpVal").textContent = xp;
+    document.getElementById("streakLabel").textContent = `🔥 ${streak} streak`;
+    buildSidebar();
+    loadLesson(currentLessonId, { trackProgress: false });
+    updateProgress();
+    showRecoveryToast("Last session restored successfully ✅");
+  } else {
+    showToast("No recoverable state found.", "warn", "⚠️");
+  }
+}
+
 function showToast(msg, type = "info", icon = "") {
   const toast = document.getElementById("toast");
   document.getElementById("toastIcon").textContent = icon;
@@ -406,6 +491,18 @@ function showToast(msg, type = "info", icon = "") {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
   announce(msg);
+}
+
+function showAchievementToast(title, description, icon) {
+  const toast = document.getElementById("toast");
+  document.getElementById("toastIcon").textContent = icon || "🏅";
+  document.getElementById("toastMsg").textContent = "🏆 " + title + " — " + description;
+  toast.className = "toast show success";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 4500);
+  announce("Achievement unlocked: " + title);
 }
 
 function announce(msg) {
@@ -421,7 +518,7 @@ function announce(msg) {
 /* ══════════════════════════════════════════════════════════
    DRAG RESIZER  (editor ↔ preview panel)
    Supports mouse + touch for mobile/tablet devices.
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function initResizer() {
   const resizer = document.getElementById("resizer");
   const workspace = document.getElementById("workspace");
@@ -461,6 +558,9 @@ function initResizer() {
     resizer.classList.remove("dragging");
     document.body.style.userSelect = "";
     document.body.style.cursor = "";
+    if (typeof LayoutManager !== "undefined" && LayoutManager.saveCurrentLayout) {
+      LayoutManager.saveCurrentLayout();
+    }
   }
 
   resizer.addEventListener("mousedown", startDrag);
@@ -474,7 +574,7 @@ function initResizer() {
 
 /* ══════════════════════════════════════════════════════════
    SIDEBAR TOGGLE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
 
@@ -488,10 +588,12 @@ function toggleSidebar() {
 }
 
 window.toggleSidebar = toggleSidebar;
+window.recoverLastSession = recoverLastSession;
+window.showRecoveryToast = showRecoveryToast;
 
 /* ══════════════════════════════════════════════════════════
    LESSON PANE (collapsible instruction area)
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function toggleLessonPane() {
   lessonPaneOpen = !lessonPaneOpen;
   document.getElementById("lessonPane").classList.toggle("collapsed", !lessonPaneOpen);
@@ -506,7 +608,7 @@ function toggleLessonPane() {
 
 /* ══════════════════════════════════════════════════════════
    PROGRESS BAR
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function updateProgress() {
   const total = getAllLessons().length;
   const done = doneSet.size;
@@ -522,7 +624,7 @@ function updateProgress() {
 
 /* ══════════════════════════════════════════════════════════
    AUTO-RUN TOGGLE
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function toggleAutorun() {
   autorun = !autorun;
   document.getElementById("autorunToggle").classList.toggle("on", autorun);
@@ -539,7 +641,7 @@ function toggleAutorun() {
 
 /* ══════════════════════════════════════════════════════════
    PREVIEW SIZE  (desktop / tablet / mobile)
-══════════════════════════════════════════════════════════ */
+╔═════════════════════════════════════════════════════════════ */
 function setPreviewSize(size) {
   const frame = document.getElementById("previewFrame");
   frame.className = "preview-iframe" + (size === "desktop" ? "" : " " + size);

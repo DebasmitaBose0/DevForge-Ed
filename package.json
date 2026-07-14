@@ -11,6 +11,7 @@
     "format:fix": "prettier --write \"*.html\" \"*.css\" \"*.js\" \"*.md\" \".github/**/*.md\" \"tests/**/*.js\"",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "check": "npm run lint:js && npm run lint:html && npm run format:check && npm run test"
   },
   "devDependencies": {
