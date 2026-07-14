@@ -58,6 +58,7 @@ let consoleScrolledUp = false;
 const CONSOLE_MAX_LINES = 200;
 let consoleLineCount = 0;
 let isReadOnlyMode = false;
+let layoutPanelVisible = false;
 
 const doneSet = new Set(); // lesson ids that have been run at least once
 const buffers = {}; // { [lessonId]: { html, css, js } }  — user edits
@@ -101,8 +102,33 @@ function init() {
     sidebarToggleBtn.setAttribute("aria-expanded", "false");
   }
 
+  // Initialize layout manager
+  if (typeof LayoutManager !== "undefined") {
+    LayoutManager.init();
+  }
+
   // Check for snapshot link on load
+  // Initialize layout manager
+  if (typeof LayoutManager !== "undefined") {
+    LayoutManager.init();
+  }
+
   checkSnapshotOnLoad();
+
+  // Initialise achievements from stored data and check for newly met milestones
+  initAchievements();
+  checkAchievements();
+
+  // Wrap loadLesson to auto-check achievements after each lesson transition
+  const origLoadLesson = window.loadLesson;
+  if (origLoadLesson) {
+    window.loadLesson = function achievementsLoadLesson(id, opts) {
+      origLoadLesson(id, opts);
+      if (typeof checkAchievements === "function") {
+        setTimeout(checkAchievements, 100);
+      }
+    };
+  }
 
   console.info("DevForge initialised — " + getAllLessons().length + " lessons ready.");
 }
@@ -253,6 +279,7 @@ document.addEventListener("keydown", e => {
     }
     if (document.getElementById("shortcutsModal").classList.contains("show")) closeShortcutsModal();
     if (document.getElementById("analyticsModal").classList.contains("show")) closeAnalyticsModal();
+    if (document.getElementById("achievementsModal").classList.contains("show")) closeAchievementsModal();
     if (document.getElementById("commandPaletteModal").classList.contains("show")) {
       CommandPalette.close();
     }
@@ -273,6 +300,9 @@ document.addEventListener("click", e => {
   if (fsPanelVisible && !e.target.closest("#fsPanel") && !e.target.closest("#fsSizeBtn")) {
     toggleFsPanel();
   }
+  if (layoutPanelVisible && !e.target.closest("#layoutPanel") && !e.target.closest("#layoutBtn")) {
+    toggleLayoutPanel();
+  }
   const popover = document.getElementById("goToLinePopover");
   if (
     popover &&
@@ -285,6 +315,7 @@ document.addEventListener("click", e => {
   // Shortcuts modal closes via its own overlay click (handled in openModal pattern)
   if (e.target === document.getElementById("shortcutsModal")) closeShortcutsModal();
   if (e.target === document.getElementById("analyticsModal")) closeAnalyticsModal();
+  if (e.target === document.getElementById("achievementsModal")) closeAchievementsModal();
   if (e.target === document.getElementById("commandPaletteModal")) CommandPalette.close();
   if (e.target === document.getElementById("resetModal")) hideResetModal();
   if (e.target === document.getElementById("importConfirmModal")) hideImportModal();
@@ -363,6 +394,9 @@ window.toggleConsole = toggleConsole;
 window.filterConsole = filterConsole;
 window.clearConsoleFilter = clearConsoleFilter;
 window.copyConsoleText = copyConsoleText;
+// Layout panel
+window.toggleLayoutPanel = toggleLayoutPanel;
+
 // Font size
 window.changeFontSize = changeFontSize;
 // Reset modal
@@ -391,6 +425,10 @@ window.renderLessonHints = renderLessonHints;
 // Command Palette (#80)
 window.CommandPalette = CommandPalette;
 
+// Achievements & Badges System
+window.openAchievementsModal = openAchievementsModal;
+window.closeAchievementsModal = closeAchievementsModal;
+
 // Go to Line (#81)
 window.toggleGoToLine = toggleGoToLine;
 window.showGoToLine = showGoToLine;
@@ -408,3 +446,7 @@ window.SnippetManager = SnippetManager;
 window.openSnippetModal = openSnippetModal;
 window.closeSnippetModal = closeSnippetModal;
 window.saveSnippetFromModal = saveSnippetFromModal;
+// Code Exporter
+window.CodeExporter = CodeExporter;
+window.toggleExportMenu = toggleExportMenu;
+window.closeExportMenu = closeExportMenu;

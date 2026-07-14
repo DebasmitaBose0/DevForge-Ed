@@ -49,3 +49,7 @@ jobs:
       - name: Run HTML Validate
         if: always()
         run: npm run lint:html
+
+      - name: Run Tests
+        if: always()
+        run: npm test
