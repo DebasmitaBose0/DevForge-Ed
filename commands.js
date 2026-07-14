@@ -238,3 +238,30 @@ CommandPalette.register({
   shortcut: "?",
   action: () => openShortcutsModal(),
 });
+
+CommandPalette.register({
+  id: "save-snippet",
+  label: "Save Code Snippet",
+  action: () => openSnippetModal(),
+});
+
+CommandPalette.register({
+  id: "load-snippet",
+  label: "Load Code Snippet",
+  action: () => openSnippetModal(),
+  id: "export-standalone",
+  label: "Export as Standalone HTML",
+  action: () => CodeExporter.exportAsStandaloneHtml(),
+});
+
+CommandPalette.register({
+  id: "export-codepen",
+  label: "Export to CodePen",
+  action: () => CodeExporter.exportAsCodePen(),
+});
+
+CommandPalette.register({
+  id: "export-jsfiddle",
+  label: "Export to JSFiddle",
+  action: () => CodeExporter.exportAsJSFiddle(),
+});

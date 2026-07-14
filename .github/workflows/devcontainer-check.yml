@@ -1,0 +1,42 @@
+name: DevContainer Check
+
+on:
+  pull_request:
+    paths:
+      - ".devcontainer/**"
+  push:
+    branches: [dev, main]
+    paths:
+      - ".devcontainer/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate DevContainer Config
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Validate devcontainer.json
+        run: |
+          if [ -f .devcontainer/devcontainer.json ]; then
+            echo "devcontainer.json exists"
+            python3 -c "import json; json.load(open('.devcontainer/devcontainer.json'))"
+            echo "devcontainer.json is valid JSON"
+          else
+            echo "No devcontainer.json found"
+            exit 1
+          fi
+
+      - name: Validate Dockerfile
+        run: |
+          if [ -f .devcontainer/Dockerfile ]; then
+            echo "Dockerfile exists"
+          else
+            echo "No Dockerfile found"
+            exit 1
+          fi
