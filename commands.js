@@ -240,6 +240,15 @@ CommandPalette.register({
 });
 
 CommandPalette.register({
+  id: "save-snippet",
+  label: "Save Code Snippet",
+  action: () => openSnippetModal(),
+});
+
+CommandPalette.register({
+  id: "load-snippet",
+  label: "Load Code Snippet",
+  action: () => openSnippetModal(),
   id: "export-standalone",
   label: "Export as Standalone HTML",
   action: () => CodeExporter.exportAsStandaloneHtml(),

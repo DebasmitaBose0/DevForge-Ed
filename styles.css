@@ -2144,6 +2144,124 @@ header {
   color: var(--cyan);
 }
 
+/* Snippet Manager Modal */
+.snippet-modal-inner {
+  max-width: 480px;
+}
+.snippet-modal-body {
+  padding: 1rem 1.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.snippet-save-area {
+  margin-bottom: 0.75rem;
+}
+.snippet-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.snippet-save-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.snippet-name-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+.snippet-name-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.25);
+}
+.snippet-save-btn {
+  white-space: nowrap;
+}
+.snippet-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.75rem 0;
+}
+.snippet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.snippet-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.snippet-item:last-child {
+  border-bottom: none;
+}
+.snippet-item:hover {
+  background: var(--hover);
+}
+.snippet-item-info {
+  flex: 1;
+  cursor: pointer;
+  min-width: 0;
+}
+.snippet-item-info:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.snippet-item-name {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.snippet-item-meta {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+.snippet-delete-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.snippet-delete-btn:hover {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+.snippet-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 /* ══════════════════════════════════════════════
    TOAST NOTIFICATION
 ══════════════════════════════════════════════ */

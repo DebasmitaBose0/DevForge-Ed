@@ -441,6 +441,11 @@ window.checkSnapshotOnLoad = checkSnapshotOnLoad;
 window.enterReadOnlyMode = enterReadOnlyMode;
 window.forkSnapshot = forkSnapshot;
 
+// Snippet Manager
+window.SnippetManager = SnippetManager;
+window.openSnippetModal = openSnippetModal;
+window.closeSnippetModal = closeSnippetModal;
+window.saveSnippetFromModal = saveSnippetFromModal;
 // Code Exporter
 window.CodeExporter = CodeExporter;
 window.toggleExportMenu = toggleExportMenu;
