@@ -34,7 +34,7 @@ jobs:
           persist-credentials: false
 
       - name: Validate devcontainer.json schema
-        uses: devcontainers/action@a5022afb14259eb626183e91273867b67fe93d35 # v1.2.0
+        uses: devcontainers/action@v1.2.0
         with:
           validate-only: true
           config-file: .devcontainer/devcontainer.json
