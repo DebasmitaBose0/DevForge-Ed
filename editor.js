@@ -87,6 +87,7 @@ function applyEditorState(val) {
 function onEditorInput() {
   if (isReadOnlyMode) return;
   if (!buffers[currentLessonId]) return;
+  PerformanceMonitor.mark("editorInput");
   const editor = document.getElementById("codeEditor");
   const newVal = editor.value;
   const key = currentLessonId + "_" + activeTab;
@@ -104,6 +105,7 @@ function onEditorInput() {
 
   // Live goal validation on every keystroke
   validateGoals();
+  PerformanceMonitor.measure("input-handle", "editorInput");
 }
 
 function pushUndoState(key, val) {
@@ -147,19 +149,30 @@ function updateLineNums() {
   if (count === lastLineCount) return;
   lastLineCount = count;
   const nums = document.getElementById("lineNums");
-  if (nums) {
+  if (!nums) return;
+  if (count > 1000) {
+    const docFragment = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const span = document.createElement("span");
+      span.textContent = i + 1;
+      docFragment.appendChild(span);
+    }
+    nums.innerHTML = "";
+    nums.appendChild(docFragment);
+  } else {
     nums.innerHTML = Array.from({ length: count }, (_, i) => `<span>${i + 1}</span>`).join("");
   }
 }
 
+const _syncScroll = throttle(function (el) {
+  document.getElementById("lineNums").scrollTop = el.scrollTop;
+  const hl = document.getElementById("codeHighlight");
+  hl.scrollTop = el.scrollTop;
+  hl.scrollLeft = el.scrollLeft;
+}, 32);
+
 function syncScroll(el) {
-  // Use rAF so the highlight layer updates in the same paint frame as the textarea
-  requestAnimationFrame(() => {
-    document.getElementById("lineNums").scrollTop = el.scrollTop;
-    const hl = document.getElementById("codeHighlight");
-    hl.scrollTop = el.scrollTop;
-    hl.scrollLeft = el.scrollLeft;
-  });
+  _syncScroll(el);
 }
 
 function handleEditorKey(e) {
